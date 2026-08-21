@@ -1,0 +1,29 @@
+{
+  "name": "mg-blueprint",
+  "version": "1.0.0",
+  "description": "高信息密度、冷静克制的知识讲解类 Remotion MG 动画模板工程",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "render": "remotion render src/index.ts PaperclipDemo out/demo.mp4 --codec h264 --crf 16"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.0",
+    "@remotion/transitions": "^4.0.0",
+    "ogl": "^1.0.11",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "remotion": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "typescript": "^5.6.3"
+  },
+  "keywords": ["remotion", "mg-animation", "motion-graphics", "video", "blueprint", "educational"],
+  "author": "骁捍",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/XIAOHAN987/mg-blueprint.git"
+  }
+}
