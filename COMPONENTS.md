@@ -289,6 +289,77 @@ public/xxx/
 
 ---
 
+## 5.5 动效原语层（smooth-motion 移植版）
+
+**核心定位**：mg-blueprint 做节拍编排层（beat 结构/相机/组件组装），smooth-motion 做出入场原语层（单个元素的进/出场动效）。
+
+### 缓动基座（src/motion/motion.ts）
+
+| 缓动 | 用途 | 曲线 |
+|---|---|---|
+| `easeOutExpo` | 进场 | 起步极快，末端指数减速，稳稳停住（无回弹） |
+| `easeInQuint` | 出场 | 起步温柔，末端猛烈甩出（先慢后快） |
+| `easeInCubic` | 穿透缩放 | 接近立方加速，穿透瞬间足够"剧" |
+
+### 四个动效原语（src/motion/primitives.tsx）
+
+| 原语 | 行为 | 关键 props |
+|---|---|---|
+| `StaggerItem` | 多元素错峰进场停稳，随统一出场甩出 | `from`（进场方向）、`exitTo`（出场方向）、`travel` |
+| `SlideInItem` | 单元素从任意侧滑入停在中心（带 6° 倾斜回正 + 抛物线沉浮的惯性感） | `from`、`exitTo` |
+| `PunchThroughItem` | 中心停稳后原地急剧放大 14 倍穿透视野消失（末段过曝提亮 + 快速淡出） | `startFrame`、`holdFrames`、`punchFrames`（默认 14） |
+| `CameraBreath` | 场景级极缓慢推近（scale 1→1.05 + 微漂移），消除死画面 | `from`、`to`、`driftX` |
+
+### 转场接力铁律（必须遵守）
+
+1. **接力时机**：新场景必须在旧场景出场走完 40% 时进场（OVERLAP = exitDur × 0.4 ≈ 6f @ exitDur=16）
+2. **场景背景透明**：所有场景背景必须全部透明，底色统一铺在根容器，否则接力重叠期新场景的不透明背景会把还没飞完的旧元素整个盖住
+3. **帧数区间**：进场 22-26f（0.73-0.87s）、出场 14-16f、stagger 相邻 4-8f、穿透 14-15f
+4. **出场方向**：一个场景内必须统一（所有元素同方向走），场景之间可交替（右 → 上 → 穿透 → 下）
+
+### 编排决策规则（"结构化自主"方案）
+
+**底层参数锁死不让 Agent 碰**（缓动曲线、帧数区间、上述铁律）；**Agent 自由决策的只有编排层**：
+
+- **进场方向就近原则**：元素在画面靠上就从上进、靠左就从左进
+- **出场方向场景间交替**：避免连续两场同方向的单调感
+- **原语选型**：单主角 → PunchThrough 穿透；多元素 → Stagger 错峰 / SlideIn 滑入
+
+### BeatWindow 集成（v2 丝滑转场版）
+
+```tsx
+// 旧版：末尾 12 帧淡出上浮
+<BeatWindow from={b("b1").from} to={b("b1").to}>
+  <TextCard lines={...} />
+</BeatWindow>
+
+// 新版：用 smooth-motion 原语做丝滑出入场
+<BeatWindow
+  from={b("b1").from}
+  to={b("b1").to}
+  mode="stagger"        // stagger/slide/punch
+  enterFrom="bottom"    // 进场方向
+  exitTo="right"        // 出场方向
+>
+  <TextCard lines={...} />
+</BeatWindow>
+```
+
+**转场接力示例**（beat 之间）：
+
+```tsx
+// b1 的元素在 b1.to - 16 帧开始出场（16 帧出场时长）
+// b2 的元素在 b1.to - 6 帧开始进场（b1 出场走 40% 时进场，OVERLAP = 16 × 0.4 ≈ 6）
+<BeatWindow from={b("b1").from} to={b("b1").to} mode="stagger" enterFrom="bottom" exitTo="right">
+  <TextCard lines={...} />
+</BeatWindow>
+<BeatWindow from={b("b1").to - 6} to={b("b2").to} mode="slide" enterFrom="left" exitTo="top">
+  <EmbeddedMedia ... />
+</BeatWindow>
+```
+
+---
+
 ## 6. 常见模式（直接抄）
 
 ### 6.1 钩子段（GitHub 录屏 + 文字卡）

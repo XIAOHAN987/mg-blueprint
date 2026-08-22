@@ -34,8 +34,8 @@ export const DeepseekVideo: React.FC = () => {
         {/* 点阵动态氛围层：叠在网格之上，Perlin 噪点缓慢流动 */}
         <DotMatrixBackground opacity={0.4} />
 
-        {/* b1 钩子：GitHub 录屏嵌入卡片 */}
-        <BeatWindow from={b("b1").from} to={b("b1").to} offsetY={-40}>
+        {/* b1 钩子：GitHub 录屏嵌入卡片（从下进，从右出） */}
+        <BeatWindow from={b("b1").from} to={b("b1").to} offsetY={-40} mode="stagger" enterFrom="bottom" exitTo="right">
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 44 }}>
             <TextCard
               kicker="GitHub"
@@ -52,8 +52,8 @@ export const DeepseekVideo: React.FC = () => {
           </div>
         </BeatWindow>
 
-        {/* b2 问题卡：关键词闪烁强调 */}
-        <BeatWindow from={b("b2").from} to={b("b2").to}>
+        {/* b2 问题卡：关键词闪烁强调（从左进，从上出） */}
+        <BeatWindow from={b("b2").from} to={b("b2").to} mode="slide" enterFrom="left" exitTo="top">
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 30 }}>
             <TextCard
               kicker="部署之前"
@@ -73,8 +73,8 @@ export const DeepseekVideo: React.FC = () => {
           </div>
         </BeatWindow>
 
-        {/* b3 官方定义：官网截图 + 高亮（恢复原样） */}
-        <BeatWindow from={b("b3").from} to={b("b3").to} offsetY={-40}>
+        {/* b3 官方定义：官网截图 + 高亮（从右进，穿透出） */}
+        <BeatWindow from={b("b3").from} to={b("b3").to} offsetY={-40} mode="punch" enterFrom="right">
           <EmbeddedMedia
             src="deepseek/harness-home.png"
             kind="image"
@@ -93,8 +93,8 @@ export const DeepseekVideo: React.FC = () => {
           </EmbeddedMedia>
         </BeatWindow>
 
-        {/* b4 类比：3D 底盘（全屏聚光：小框 → 放大下移 → 缩回） */}
-        <BeatWindow from={b("b4").from} to={b("b4").to} offsetY={-40}>
+        {/* b4 类比：3D 底盘（全屏聚光，从下进，从下出） */}
+        <BeatWindow from={b("b4").from} to={b("b4").to} offsetY={-40} mode="slide" enterFrom="bottom" exitTo="bottom">
           <SpotlightMedia
             src="deepseek/chassis-3d.mp4"
             kind="video"
@@ -105,8 +105,8 @@ export const DeepseekVideo: React.FC = () => {
           />
         </BeatWindow>
 
-        {/* b5 流水线嵌入 */}
-        <BeatWindow from={b("b5").from} to={b("b5").to} offsetY={-40}>
+        {/* b5 流水线嵌入（从上进，从右出） */}
+        <BeatWindow from={b("b5").from} to={b("b5").to} offsetY={-40} mode="stagger" enterFrom="top" exitTo="right">
           <EmbeddedMedia
             src="deepseek/pipeline.mp4"
             kind="video"
@@ -116,8 +116,8 @@ export const DeepseekVideo: React.FC = () => {
           />
         </BeatWindow>
 
-        {/* b6 繁琐配置嵌入 */}
-        <BeatWindow from={b("b6").from} to={b("b6").to} offsetY={-40}>
+        {/* b6 繁琐配置嵌入（从左进，穿透出） */}
+        <BeatWindow from={b("b6").from} to={b("b6").to} offsetY={-40} mode="punch" enterFrom="left">
           <EmbeddedMedia
             src="deepseek/setup-steps.mp4"
             kind="video"
@@ -128,8 +128,8 @@ export const DeepseekVideo: React.FC = () => {
           />
         </BeatWindow>
 
-        {/* b7 转折：优秀（逐字升起） */}
-        <BeatWindow from={b("b7").from} to={b("b7").to}>
+        {/* b7 转折：优秀（逐字升起，从下进，从上出） */}
+        <BeatWindow from={b("b7").from} to={b("b7").to} mode="stagger" enterFrom="bottom" exitTo="top">
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 30 }}>
             <TextReveal
               text="框架本身"
@@ -151,8 +151,8 @@ export const DeepseekVideo: React.FC = () => {
           </div>
         </BeatWindow>
 
-        {/* b8 警告：不推荐（关键词闪烁） */}
-        <BeatWindow from={b("b8").from} to={b("b8").to}>
+        {/* b8 警告：不推荐（关键词闪烁，从右进，从下出） */}
+        <BeatWindow from={b("b8").from} to={b("b8").to} mode="slide" enterFrom="right" exitTo="bottom">
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 30 }}>
             <TextCard
               variant="warning"
@@ -173,8 +173,8 @@ export const DeepseekVideo: React.FC = () => {
           </div>
         </BeatWindow>
 
-        {/* b9 理由（逐词推进） */}
-        <BeatWindow from={b("b9").from} to={b("b9").to}>
+        {/* b9 理由（逐词推进，从上进，从右出） */}
+        <BeatWindow from={b("b9").from} to={b("b9").to} mode="stagger" enterFrom="top" exitTo="right">
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 30 }}>
             <TextReveal
               text="目标是产出内容、拿到结果"
@@ -196,8 +196,8 @@ export const DeepseekVideo: React.FC = () => {
           </div>
         </BeatWindow>
 
-        {/* b10 对比：成熟智能体三能力 */}
-        <BeatWindow from={b("b10").from} to={b("b10").to}>
+        {/* b10 对比：成熟智能体三能力（从左进，穿透出） */}
+        <BeatWindow from={b("b10").from} to={b("b10").to} mode="punch" enterFrom="left">
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 52 }}>
             <TextCard
               delay={b("b10").from + 4}
@@ -214,8 +214,8 @@ export const DeepseekVideo: React.FC = () => {
           </div>
         </BeatWindow>
 
-        {/* b11 适合人群（逐字升起 + 关键词闪烁） */}
-        <BeatWindow from={b("b11").from} to={b("b11").to}>
+        {/* b11 适合人群（逐字升起 + 关键词闪烁，从下进，从上出） */}
+        <BeatWindow from={b("b11").from} to={b("b11").to} mode="stagger" enterFrom="bottom" exitTo="top">
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 30 }}>
             <TextCard
               kicker="Harness 更适合"
@@ -235,8 +235,8 @@ export const DeepseekVideo: React.FC = () => {
           </div>
         </BeatWindow>
 
-        {/* b12 过渡 */}
-        <BeatWindow from={b("b12").from} to={b("b12").to}>
+        {/* b12 过渡（从右进，从下出） */}
+        <BeatWindow from={b("b12").from} to={b("b12").to} mode="slide" enterFrom="right" exitTo="bottom">
           <TextCard
             delay={b("b12").from + 4}
             lines={[{ text: "单纯感兴趣？可以浅尝" }]}
@@ -244,8 +244,8 @@ export const DeepseekVideo: React.FC = () => {
           />
         </BeatWindow>
 
-        {/* b13 金句收束：关键词闪烁 */}
-        <BeatWindow from={b("b13").from} to={b("b13").to}>
+        {/* b13 金句收束：关键词闪烁（从上进，穿透出） */}
+        <BeatWindow from={b("b13").from} to={b("b13").to} mode="punch" enterFrom="top">
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 30 }}>
             <TextCard
               variant="quote"
