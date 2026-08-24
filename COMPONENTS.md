@@ -427,6 +427,44 @@ public/xxx/
 - 元素在画面靠右 → 从右进
 - 元素在画面中心 → 从中心进（punch 穿透）
 
+### 元素分开入场/出场（画面内多个元素可以不同方向，但必须和谐）
+
+**允许的组合**（动势和谐）：
+- ✅ 标题从上入场 + 画面从下入场（垂直方向分离，上下对称）
+- ✅ 标题从左入场 + 画面从右入场（水平方向分离，左右对称）
+- ✅ 标题从上入场 + 画面从右入场（垂直+水平，动势不冲突）
+
+**禁止的组合**（动势冲突）：
+- ❌ 标题从下入场 + 画面从右入场（下+右，动势奇怪）
+- ❌ 标题从左入场 + 画面从上入场（左+上，动势奇怪）
+- ❌ 标题从下入场 + 画面从左入场（下+左，动势奇怪）
+- ❌ 标题从右入场 + 画面从上入场（右+上，动势奇怪）
+
+**出场规则**：
+- 可以同步出场（所有元素同方向一起甩出）
+- 可以分开出场（标题从上出 + 画面从下出，或标题从左出 + 画面从右出）
+- 分开出场时必须和入场方向形成"对称"（入：上+下 → 出：上+下；入：左+右 → 出：左+右）
+
+**示例**（元素分开入场/出场）：
+
+```tsx
+// 标题从上入场 + 画面从下入场（垂直分离）
+<BeatWindow from={b("b1").from} to={b("b1").to} mode="stagger" enterFrom="top" exitTo="top">
+  <TextCard lines={[{ text: "标题" }]} />
+</BeatWindow>
+<BeatWindow from={b("b1").from + 8} to={b("b1").to} mode="stagger" enterFrom="bottom" exitTo="bottom">
+  <EmbeddedMedia ... />
+</BeatWindow>
+
+// 标题从左入场 + 画面从右入场（水平分离）
+<BeatWindow from={b("b2").from} to={b("b2").to} mode="slide" enterFrom="left" exitTo="left">
+  <TextCard lines={[{ text: "标题" }]} />
+</BeatWindow>
+<BeatWindow from={b("b2").from + 8} to={b("b2").to} mode="slide" enterFrom="right" exitTo="right">
+  <EmbeddedMedia ... />
+</BeatWindow>
+```
+
 ### 原语选型（单主角 vs 多元素）
 
 - **单主角**（一个素材/一个关键词）→ PunchThrough 穿透
