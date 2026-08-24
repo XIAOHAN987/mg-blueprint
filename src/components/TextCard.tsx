@@ -63,8 +63,9 @@ export const TextCard: React.FC<{
             key={i}
             style={{
               opacity: enter,
-              transform: `translateY(${interpolate(enter, [0, 1], [26, 0])}px)`,
+              transform: `translateY(${Math.round(interpolate(enter, [0, 1], [26, 0]))}px)`,
               filter: `blur(${interpolate(enter, [0, 1], [8, 0])}px)`,
+              textRendering: "geometricPrecision",
               fontSize,
               fontWeight: 700,
               lineHeight: 1.25,

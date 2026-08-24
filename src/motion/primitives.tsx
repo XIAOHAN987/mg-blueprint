@@ -77,11 +77,19 @@ export const StaggerItem: React.FC<{
   from: Direction;
   exitTo?: Direction;
   travel?: number;
+  /** 进场速度倍率：<1 更快更提前，>1 更慢更拖后（默认 1，全片不要全用 1） */
+  enterRate?: number;
+  /** 出场速度倍率：<1 更快先走，>1 更慢后走（部分元素同步出场用 1 即可） */
+  exitRate?: number;
   children: React.ReactNode;
   style?: React.CSSProperties;
-}> = ({ startFrame, phase, from, exitTo = "right", travel = 140, children, style }) => {
+}> = ({ startFrame, phase, from, exitTo = "right", travel = 140, enterRate = 1, exitRate = 1, children, style }) => {
   const frame = useCurrentFrame();
-  const { enter, exit } = usePhaseProgress(frame, startFrame, phase);
+  const { enter, exit } = usePhaseProgress(frame, startFrame, {
+    enterDur: Math.round(phase.enterDur * enterRate),
+    holdDur: phase.holdDur,
+    exitDur: Math.round(phase.exitDur * exitRate),
+  });
 
   const [fx, fy] = dirVec(from);
   const [ex, ey] = dirVec(exitTo);
@@ -118,10 +126,16 @@ export const SlideInItem: React.FC<{
   phase: MotionPhase;
   from: Direction;
   exitTo?: Direction;
+  enterRate?: number;
+  exitRate?: number;
   children: React.ReactNode;
-}> = ({ startFrame, phase, from, exitTo = "right", children }) => {
+}> = ({ startFrame, phase, from, exitTo = "right", enterRate = 1, exitRate = 1, children }) => {
   const frame = useCurrentFrame();
-  const { enter, exit } = usePhaseProgress(frame, startFrame, phase);
+  const { enter, exit } = usePhaseProgress(frame, startFrame, {
+    enterDur: Math.round(phase.enterDur * enterRate),
+    holdDur: phase.holdDur,
+    exitDur: Math.round(phase.exitDur * exitRate),
+  });
 
   const [fx, fy] = dirVec(from);
   const [ex, ey] = dirVec(exitTo);

@@ -7,6 +7,7 @@ import {
   staticFile,
   Video,
   Img,
+  Sequence,
 } from "remotion";
 
 /**
@@ -25,8 +26,10 @@ export const EmbeddedMedia: React.FC<{
   /** 视频裁剪起点（秒） */
   startFromSec?: number;
   label?: string;
+  /** 视频从这个全局帧开始播放（局部时间从 0 起算，解决跟随全局时间轴导致超出素材长度定格的问题） */
+  startAtFrame?: number;
   children?: React.ReactNode;
-}> = ({ src, kind, width = 1100, delay = 0, startFromSec = 0, label, children }) => {
+}> = ({ src, kind, width = 1100, delay = 0, startFromSec = 0, label, startAtFrame, children }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
@@ -59,12 +62,16 @@ export const EmbeddedMedia: React.FC<{
         }}
       >
         {kind === "video" ? (
-          <Video
-            src={staticFile(src)}
-            muted
-            startFrom={Math.round(startFromSec * fps)}
-            style={{ width: "100%" }}
-          />
+          // 用 Sequence 把视频的局部时间轴归零：全局 startAtFrame 帧时，视频从第 0 帧开始播。
+          // 否则 <Video> 跟随全局时间（如第 50 秒），素材只有 8 秒就定格在末尾静态图。
+          <Sequence from={startAtFrame ?? 0} layout="none">
+            <Video
+              src={staticFile(src)}
+              muted
+              startFrom={Math.round(startFromSec * fps)}
+              style={{ width: "100%" }}
+            />
+          </Sequence>
         ) : (
           <Img src={staticFile(src)} style={{ width: "100%" }} />
         )}

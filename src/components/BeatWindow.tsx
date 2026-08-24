@@ -35,6 +35,10 @@ export const BeatWindow: React.FC<{
   mode?: "stagger" | "slide" | "punch";
   enterFrom?: Direction;
   exitTo?: Direction;
+  /** 进场速度倍率：<1 更快提前，>1 更慢拖后 */
+  enterRate?: number;
+  /** 出场速度倍率：<1 更快先走，>1 更慢后走 */
+  exitRate?: number;
   children: React.ReactNode;
 }> = ({
   from,
@@ -44,6 +48,8 @@ export const BeatWindow: React.FC<{
   mode = "stagger",
   enterFrom = "bottom",
   exitTo = "right",
+  enterRate = 1,
+  exitRate = 1,
   children,
 }) => {
   const frame = useCurrentFrame();
@@ -78,7 +84,7 @@ export const BeatWindow: React.FC<{
 
   if (mode === "slide") {
     return (
-      <SlideInItem startFrame={from} phase={phase} from={enterFrom} exitTo={exitTo}>
+      <SlideInItem startFrame={from} phase={phase} from={enterFrom} exitTo={exitTo} enterRate={enterRate} exitRate={exitRate}>
         {content}
       </SlideInItem>
     );
@@ -86,7 +92,7 @@ export const BeatWindow: React.FC<{
 
   // 默认 stagger
   return (
-    <StaggerItem startFrame={from} phase={phase} from={enterFrom} exitTo={exitTo}>
+    <StaggerItem startFrame={from} phase={phase} from={enterFrom} exitTo={exitTo} enterRate={enterRate} exitRate={exitRate}>
       {content}
     </StaggerItem>
   );

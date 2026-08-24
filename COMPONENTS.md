@@ -470,6 +470,67 @@ public/xxx/
 - **单主角**（一个素材/一个关键词）→ PunchThrough 穿透
 - **多元素**（文字卡+素材嵌入/流程图）→ Stagger 错峰 / SlideIn 滑入
 
+### 出入场快慢错落（enterRate / exitRate，不要全部统一速度）
+
+元素入场和出场都可以做快慢效果，不要全部统一一个速度——有些可以提前进场、有些慢点进场，出场也是，部分同步出场即可。
+
+```tsx
+// StaggerItem / SlideInItem / BeatWindow 都支持 enterRate / exitRate 倍率
+// <1 更快更提前，>1 更慢更拖后，默认 1
+<BeatWindow enterRate={0.85} exitRate={1}>   // 进场稍快
+<BeatWindow enterRate={1.15} exitRate={0.8}> // 进场稍慢，出场先走
+```
+
+全片错落应用（如 b1 进 0.85 / b2 出 0.8 / b4 进 1.15 / b5 进 0.9 出 1.1），需要同步出场的保持 1。
+
+---
+
+## 5.7 口播视频分镜铁律（v3，口播驱动必看）
+
+**有 SRT 口播的视频（知识讲解/产品介绍），分镜表必须严格按口播时间线，不能套用"相邻 beat 重叠 6 帧接力"**：
+
+1. **beat 边界 = 口播句子边界**：`from = 该段首句开始秒 × fps`，`to = 该段末句结束秒 × fps`
+2. **相邻 beat 不重叠**：上一个画面在口播讲完那帧才走，下一个紧跟着进。重叠接力会让"口播还没说完画面就跳了"
+3. **丝滑感靠 BeatWindow 进出场缓动在边界自然衔接**，不靠画面提前抢跑
+4. **素材比 beat 长的嵌段**（如"跑步比喻"素材 8s 但只讲 3s）：让 beat 窗口匹配口播时长，素材用 loop 或自然播完，别"口播说完就切"
+
+> 反面教训：套用 5.5 的"重叠 6 帧接力"做口播视频，会导致"9 秒才说费 TOKEN 但 6 秒就出动画""13 秒没讲完就跳下一个画面"——分镜表边界必须 = 口播边界。
+
+---
+
+## 5.8 嵌入视频播放修复（EmbeddedMedia startAtFrame）
+
+**普通 `<Video>` 跟随全局 Composition 时间轴**：某段视频在全片第 50 秒处，它就去找素材第 50 秒——素材只有 8 秒，会**定格在最后一帧静态图**。
+
+修复：EmbeddedMedia 加 `startAtFrame` prop，内部用 `<Sequence from={startAtFrame} layout="none">` 把视频局部时间轴归零——全局第 50 秒时，视频从第 0 帧起播：
+
+```tsx
+<EmbeddedMedia
+  src="xxx.mp4"
+  kind="video"
+  delay={b("b8").from + 10}
+  startAtFrame={b("b8").from + 10}  // = 内容真正开始的全局帧
+/>
+```
+
+**禁止**：给 `<Video>` 动态算 startFrom/trimBefore 来"定位"——那些 prop 只在挂载时生效一次且语义是"裁剪"不是"定位"，动态算会把时间轴搞乱锁死成静态图。
+
+**视频渲染抖动**：保持普通 `<Video>` + `acceptableTimeShiftInSeconds={0.6}` 容忍寻址误差。**不要换 `<OffthreadVideo>`**——它有 seek 缓存 bug（并发渲染时视频流 seek 后缓存不失效，一直返回同一关键帧 → 卡成静态图）。
+
+---
+
+## 5.9 新增通用组件（2026-08 组件介绍视频沉淀）
+
+| 组件 | 用途 |
+|---|---|
+| `PrimitiveCards` | 组件/能力卡片展开+合拢动画（一叠→横排展示+微动效→合拢滑出） |
+| `FilmReel` | 历史视频/作品胶片滚动（横排+齿孔边框+缓慢匀速滚动） |
+| `SpeedCurve` | 缓动速度-时间曲线可视化（easeOutExpo/easeInQuint 对照） |
+| `TokenCounter` | 数字爆炸式上涨计数器（成本/数据冲击记忆点） |
+| `WebpageThinking` | "用写网页思维做视频"对照演示（代码块逐行敲出+元素僵硬线性运动） |
+| `WordKaraokeCaptions` | 中文逐字卡拉OK字幕（正在说的字纯白+强调色下划线，替代 snapcn karaoke 的中文不适配） |
+| `LikeShareEnd` | 结尾点赞+转发 SVG 动画（弹入+回弹+脉冲） |
+
 ---
 
 ## 6. 常见模式（直接抄）

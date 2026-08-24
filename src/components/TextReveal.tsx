@@ -318,11 +318,12 @@ export const TextReveal: React.FC<TextRevealProps> = (props) => {
       explicit[key] = value;
   }
   const preset = props.preset && props.preset !== "none" ? PRESETS[props.preset] : undefined;
-  const merged = { ...DEFAULTS, ...explicit, ...preset } as TextRevealSettings & { effects: TextRevealEffect[] | string };
+  const merged = { ...DEFAULTS, ...explicit, ...preset } as unknown as TextRevealSettings & { effects: TextRevealEffect[] | string };
   const exitDirection = (preset?.exitDirection ?? props.exitDirection ?? preset?.direction ?? props.direction ?? DEFAULTS.direction) as TextRevealDirection;
+  const rawEffects: TextRevealEffect[] | string = merged.effects;
   const cfg: TextRevealSettings = {
     ...merged,
-    effects: Array.isArray(merged.effects) ? merged.effects : (merged.effects.split(",").map((e) => e.trim()) as TextRevealEffect[]),
+    effects: Array.isArray(rawEffects) ? rawEffects : (rawEffects.split(",").map((e: string) => e.trim()) as TextRevealEffect[]),
     exitDirection,
   };
 
@@ -396,15 +397,21 @@ export const TextReveal: React.FC<TextRevealProps> = (props) => {
         const x = enterX + exitX;
         const y = enterY + exitY;
 
+        // 静止后取整到物理像素，消除亚像素抖动（文字 hinting 每帧重吸附导致的抖动）
+        const resting = enterProgress >= 1 && exitProgress <= 0;
+        const fx = resting ? Math.round(x) : x;
+        const fy = resting ? Math.round(y) : y;
+
         return (
           <span
             key={i}
             style={{
               display: "inline-block",
               opacity,
-              transform: `translate(${x}px, ${y}px) scale(${scale})`,
+              transform: `translate(${fx}px, ${fy}px) scale(${scale})`,
               filter: blur > 0 ? `blur(${blur}px)` : undefined,
               letterSpacing: tracking > 0 ? `${tracking}em` : undefined,
+              textRendering: "geometricPrecision",
             }}
           >
             {unit}
