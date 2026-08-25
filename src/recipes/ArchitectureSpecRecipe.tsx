@@ -1,20 +1,20 @@
 import React from "react";
 import { AbsoluteFill, Audio, staticFile } from "remotion";
-import { CameraRig } from "./components/CameraRig";
-import { GridBackground } from "./components/GridBackground";
-import { DotMatrixBackground } from "./components/DotMatrixBackground";
-import { BeatWindow } from "./components/BeatWindow";
-import { EmbeddedMedia } from "./components/EmbeddedMedia";
-import { HighlightCallout } from "./components/HighlightCallout";
-import { TextCard } from "./components/TextCard";
-import { FeatureCards } from "./components/FeatureCards";
-import { SrtCaptions } from "./components/SrtCaptions";
-import { FlickerText } from "./components/FlickerText";
-import { TextReveal } from "./components/TextReveal";
-import { FrameChrome } from "./components/FrameChrome";
-import { SpotlightMedia } from "./components/SpotlightMedia";
-import { deepseekBeatMap } from "./beats/deepseek";
-import { deepseekCues } from "./beats/deepseek-cues";
+import { CameraRig } from "../components/CameraRig";
+import { GridBackground } from "../components/GridBackground";
+import { DotMatrixBackground } from "../components/DotMatrixBackground";
+import { BeatWindow } from "../components/BeatWindow";
+import { EmbeddedMedia } from "../components/EmbeddedMedia";
+import { HighlightCallout } from "../components/HighlightCallout";
+import { TextCard } from "../components/TextCard";
+import { FeatureCards } from "../components/FeatureCards";
+import { SrtCaptions } from "../components/SrtCaptions";
+import { FlickerText } from "../components/FlickerText";
+import { TextReveal } from "../components/TextReveal";
+import { FrameChrome } from "../components/FrameChrome";
+import { SpotlightMedia } from "../components/SpotlightMedia";
+import { deepseekBeatMap } from "../beats/deepseek";
+import { deepseekCues } from "../beats/deepseek-cues";
 
 /**
  * 《DeepSeek Harness 适不适合你》正片（v3 回退版）

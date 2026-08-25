@@ -1,13 +1,13 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, interpolate, staticFile, CanvasImage } from "remotion";
-import { CameraRig } from "./components/CameraRig";
-import { GridBackground } from "./components/GridBackground";
-import { OutlineTitle } from "./components/OutlineTitle";
-import { BitRow } from "./components/BitRow";
-import { TrackList } from "./components/TrackList";
-import { CdDisc } from "./components/CdDisc";
-import { Captions } from "./components/Captions";
-import { demoBeatMap } from "./beats/demo";
+import { CameraRig } from "../components/CameraRig";
+import { GridBackground } from "../components/GridBackground";
+import { OutlineTitle } from "../components/OutlineTitle";
+import { BitRow } from "../components/BitRow";
+import { TrackList } from "../components/TrackList";
+import { CdDisc } from "../components/CdDisc";
+import { Captions } from "../components/Captions";
+import { demoBeatMap } from "../beats/demo";
 
 /**
  * 元素从不「卸载」—— 它们一直在舞台上，

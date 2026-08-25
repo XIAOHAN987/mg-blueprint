@@ -802,4 +802,51 @@ public/xxx/
 
 ---
 
+## 7. 原子组件层（atoms/ —— 焊死手感，Agent 只塞内容）
+
+**这一层是为了防"Agent 实现缩水"**：规范写得再全，Agent 也会随手写 `<div>` 平铺。atoms 把动效手感、时序、字阶全部焊死在组件里，Agent 只能往里塞内容，结构上物理不可能写歪。
+
+| 组件 | 焊死的东西 | 用法 |
+|---|---|---|
+| `StaggerGroup` | interval=4 帧（锁死，>8 帧大脑识别为串行）；进场强制复合（位移+scale0.93→1+透明度前25%拉满）；出场统一方向加速甩走 | `<StaggerGroup startFrame={x} exitStartFrame={y}><A/><B/></StaggerGroup>` |
+| `SnapText` | overflow 遮罩裁切 + translateY(40→0) 弹射 + 复合微缩放；字阶焊死 hero≥88px / sub≤24px，禁 24-44px 中间字号 | `<SnapText text="主标" sub="次级" size="hero" startFrame={x}/>` |
+| `CameraDrift` | 任何素材包进来强制非线性推焦+微呼吸+微暗角加深；focal=true 前景推近更快（视差） | `<CameraDrift src="x.mp4" kind="video" startAtFrame={x}/>` |
+| `SpecDivider` | 0.5px 极细线+等宽编码标签分区，替代所有卡片背景框/阴影/大圆角 | `<SpecDivider label="SECTION" startFrame={x}/>` |
+
+**Agent 调用铁律**：能整段用 atoms 就用 atoms，不要拆回 StaggerItem/SlideInItem 裸拼。
+
+## 8. 强制时序插槽（Stagger Timeline Slot）
+
+极客湾的流畅感来自"上一个动作没停稳，下一个已经抢跑几帧"。任何分镜的元素必须分配到这 4 个 Slot，**严禁等上一个动画完全结束再启动**：
+
+| Slot | 触发相对帧 | 动作 | 动效参数（本库调性） |
+|---|---|---|---|
+| Slot 0 (Camera) | Frame 0 | 底层素材 CameraDrift 推焦+微暗角加深 | easeInOut 240f 推焦 |
+| Slot 1 (Hero Title) | Frame 3 | SnapText 超大主标从遮罩底部弹射 | easeOutExpo 16f 稳停 |
+| Slot 2 (Annotation) | Frame 8 | SpecDivider 引线/高亮几何块抢跑展开 | 0→100% 8f 完成 |
+| Slot 3 (Meta Data) | Frame 12 | 底部极简参数/次级文字浮现 | opacity 0→1 + translateY 15→0 |
+
+## 9. 代码级负向红线（AGENT CODE GENERATION CONSTRAINTS, VIOLATIONS WILL BE REJECTED）
+
+```markdown
+1. NO 元素孤立淡入淡出（纯 opacity 0→1）—— 必须复合位移+缩放
+2. NO stagger interval > 8 帧 —— 锁死 4 帧（StaggerGroup 已内建）
+3. NO 裸 <Img>/<Video> —— 必须包 CameraDrift 或 EmbeddedMedia
+4. NO 垂直堆叠超过 1 个主论点每屏 —— 单焦点节拍
+5. 字号禁止落在 24-44px 区间 —— 要么 ≥88px Hero，要么 ≤22px Meta/Spec
+6. NO 高饱和亮色/撞色/彩虹渐变 —— 深蓝灰底 + 冷静蓝强调
+7. NO 等上一个动画完全结束再启动下一个 —— 按 Slot 表抢跑
+```
+
+## 10. recipes/ 样例工程（Agent 的 Few-Shot 基准）
+
+`/recipes` 里是两个官方基准样例，**Agent 写新分镜时必须严格仿照它们的 DOM 深度与动效调用方式**，禁止退化回劣质网页模板：
+
+- `HardwareAnalysisRecipe.tsx`（原光碟/8bit demo）：底层素材推焦 + 几何色块高亮 + 单点超大字阶的标准实现
+- `ArchitectureSpecRecipe.tsx`（原 Deepseek 讲解）：冷灰/纯黑底 + 锁定相机 zoom-only + 单句核心论点的标准实现
+
+给 Agent 的 Prompt 里写明：**"必须严格仿照 /recipes/HardwareAnalysisRecipe.tsx 或 /recipes/ArchitectureSpecRecipe.tsx 的 DOM 深度与动效调用方式编写新分镜"**。
+
+---
+
 **文件结束。** 用这套组件库做新视频时，只需要：准备素材 → 生成分镜表 → 组装 Composition → Studio 预览迭代 → 渲染出片。

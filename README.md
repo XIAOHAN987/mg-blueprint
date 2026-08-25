@@ -34,6 +34,11 @@ npm run render
 ```
 src/
 ├─ components/          # 组件库
+│  ├─ atoms/               # 原子组件（焊死手感，Agent 只塞内容）
+│  │  ├─ StaggerGroup.tsx    # 错峰进场合（interval=4 锁死，复合爆发）
+│  │  ├─ SnapText.tsx        # 超大字阶弹射（hero≥88px / sub≤24px 焊死）
+│  │  ├─ CameraDrift.tsx     # 素材推焦+微呼吸+视差（抹杀静态死图）
+│  │  └─ SpecDivider.tsx     # 0.5px 极细线分区（替代卡片背景框）
 │  ├─ CameraRig.tsx         # 相机系统（核心）
 │  ├─ GridBackground.tsx    # 细网格蓝图背景
 │  ├─ DotMatrixBackground.tsx # 点阵动态背景
@@ -55,15 +60,16 @@ src/
 │  ├─ schema.ts             # BeatMap 类型定义
 │  ├─ demo.ts               # demo 分镜表（CD/8bit 科普）
 │  └─ deepseek.ts           # DeepSeek 视频分镜表
-├─ Demo.tsx             # demo 合成（CD/8bit 科普）
-├─ Deepseek.tsx         # DeepSeek 视频合成
+├─ recipes/             # Agent Few-Shot 基准样例（写新分镜必须仿照）
+│  ├─ HardwareAnalysisRecipe.tsx  # 底层素材推焦+几何高亮+单点超大字阶
+│  └─ ArchitectureSpecRecipe.tsx  # 冷灰底+锁定相机 zoom-only+单句核心论点
 └─ Root.tsx             # Composition 注册
 
 public/               # 素材（视频/截图/音频/字幕）
 ├─ deepseek/              # DeepSeek 视频素材
 └─ ...
 
-COMPONENTS.md         # 组件库使用手册（给 AI 的交接文档）
+COMPONENTS.md         # 组件库使用手册（给 AI 的交接文档，含原子组件/时序插槽/红线清单）
 HANDOFF.md            # 优化交接文档（历史）
 ```
 
