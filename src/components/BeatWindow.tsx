@@ -26,6 +26,8 @@ import { defaultPhase, Direction } from "../motion/motion";
  */
 
 const EXIT_FRAMES = 16; // smooth-motion 出场帧数（14-16f）
+/** 转场接力重叠帧：旧 beat 出场拖尾延伸到下一个 beat 开头，新 beat 同时滑入 */
+export const LINK_OVERLAP = 16;
 
 export const BeatWindow: React.FC<{
   from: number;
@@ -39,6 +41,8 @@ export const BeatWindow: React.FC<{
   enterRate?: number;
   /** 出场速度倍率：<1 更快先走，>1 更慢后走 */
   exitRate?: number;
+  /** 转场接力：true 时 beat 在 to 之后多存活 LINK_OVERLAP 帧做滑出（与下一个 beat 进场重叠，动势连续） */
+  linkOut?: boolean;
   children: React.ReactNode;
 }> = ({
   from,
@@ -50,12 +54,15 @@ export const BeatWindow: React.FC<{
   exitTo = "right",
   enterRate = 1,
   exitRate = 1,
+  linkOut = false,
   children,
 }) => {
   const frame = useCurrentFrame();
-  if (frame < from || frame >= to) return null;
+  // linkOut：beat 内容存活到 to + LINK_OVERLAP，把出场滑走放进转场重叠区
+  const endFrame = linkOut ? to + LINK_OVERLAP : to;
+  if (frame < from || frame >= endFrame) return null;
 
-  const beatDur = to - from;
+  const beatDur = endFrame - from;
   const holdDur = beatDur - EXIT_FRAMES - 22; // 进场 22f + 出场 16f，其余 hold
 
   const phase = defaultPhase(holdDur);
