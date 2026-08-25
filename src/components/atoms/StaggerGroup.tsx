@@ -55,7 +55,8 @@ export const StaggerGroup: React.FC<{
         });
 
         // 出场：所有子元素同一时刻统一方向甩走（不错峰，形成整体感）
-        const exitStart = exitStartFrame ?? Infinity;
+        // 不传 exitStartFrame 时用极大有限值（Infinity 会触发 interpolate 校验报错）
+        const exitStart = exitStartFrame ?? Number.MAX_SAFE_INTEGER / 2;
         const exit = interpolate(frame, [exitStart, exitStart + EXIT_DUR], [0, 1], {
           extrapolateLeft: "clamp",
           extrapolateRight: "clamp",
