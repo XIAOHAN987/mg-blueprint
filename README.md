@@ -17,16 +17,51 @@
 
 ## 快速开始
 
+### 给创作者（你不会写代码也能用）
+
+这套库是给你的 **AI Agent**（Claude / Cursor / WorkBuddy 等）准备的。你不需要懂代码，只要：
+
+**1. 准备素材**（放进 `public/` 目录）：
+
+| 素材 | 必需? | 说明 |
+|---|---|---|
+| 口播音频 | 推荐 | `.wav` / `.mp3`，你念一遍稿子 |
+| 字幕文件 | 推荐 | `.srt`，和音频对齐的字幕（剪映/必剪可导出） |
+| 录屏/产品片段 | 可选 | `.mp4`，要展示的画面 |
+| 截图/图片 | 可选 | `.png`，要讲解的界面 |
+
+> 没素材也能先看效果：直接跑 `npm run studio`，左上角切到 `HardwareAnalysisRecipe` 或 `ArchitectureSpecRecipe`，这两个是自带的完整示例。
+
+**2. 对你的 Agent 说一句话**：
+
+```
+用 mg-blueprint 这套组件库帮我做一条视频。
+素材在 public/ 里：口播是 xxx.wav，字幕是 xxx.srt，还有 xxx.mp4 录屏。
+先读 COMPONENTS.md 和 /recipes 里的样例，严格仿照它们的写法。
+必须用 atoms 原子组件（StaggerGroup/SnapText/CameraDrift/SpecDivider），遵守第9章红线清单。
+做完启动 Studio 让我预览，我确认后再渲染。
+```
+
+**3. 预览 + 确认 + 出片**：Agent 会启动预览给你看，你说"这里不对"它就改，确认后渲染出 mp4。
+
+---
+
+### 给开发者（或 Agent 自己读）
+
+**工作流**（严格按此顺序，不要跳步）：
+
+1. **读规范**：先读 `COMPONENTS.md` 全文——里面有原子组件用法（第7章）、时序插槽（第8章）、负向红线（第9章）、素材播放决策（5.x 章）
+2. **读样例**：读 `/recipes/HardwareAnalysisRecipe.tsx` 和 `/recipes/ArchitectureSpecRecipe.tsx`，新分镜必须严格仿照它们的 DOM 深度与动效调用方式
+3. **素材归位**：让用户把素材放进 `public/<项目名>/`
+4. **生成分镜表**：SRT 字幕 → 归并成 beat → 写进 `src/beats/<项目名>.ts`（**beat 边界 = 口播句子边界，相邻 beat 不重叠**——见 5.7 铁律）
+5. **组装合成**：新建 `src/<项目名>.tsx`，用 atoms 原子组件 + recipes 的结构组装，注册到 `Root.tsx`
+6. **预览迭代**：`npm run studio`，改代码保存即热更新，**迭代期不要渲染**（太慢）
+7. **渲染出片**：用户确认后 `npm run render`
+
 ```bash
-# 安装依赖
-npm install
-
-# 启动 Studio 预览（改代码保存即热更新）
-npm run studio
-# 浏览器打开 http://localhost:3000，左上角切换 Composition
-
-# 渲染出片（用户确认后）
-npm run render
+npm install        # 装依赖
+npm run studio     # 预览（改代码即热更新）
+npm run render     # 渲染出片（用户确认后）
 ```
 
 ## 项目结构
