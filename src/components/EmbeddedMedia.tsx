@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   useCurrentFrame,
   spring,
@@ -9,6 +9,11 @@ import {
   Img,
   Sequence,
 } from "remotion";
+
+/** 画面安全区：素材容器不许超出这个范围（1920x1080 画面，留出标题/字幕/边距） */
+const SAFE_MAX_W = 1400;
+const SAFE_MAX_H = 760;
+const DEFAULT_W = 1100;
 
 /**
  * EmbeddedMedia —— AI 视频素材 / 截图的标准嵌入容器（专业科普「素材上桌」）。
@@ -21,6 +26,7 @@ import {
 export const EmbeddedMedia: React.FC<{
   src: string;
   kind: "video" | "image";
+  /** 固定宽度（可选）。不传则按素材宽高比+画面安全区自动算，避免忽大忽小 */
   width?: number;
   delay?: number;
   /** 视频裁剪起点（秒） */
@@ -29,9 +35,25 @@ export const EmbeddedMedia: React.FC<{
   /** 视频从这个全局帧开始播放（局部时间从 0 起算，解决跟随全局时间轴导致超出素材长度定格的问题） */
   startAtFrame?: number;
   children?: React.ReactNode;
-}> = ({ src, kind, width = 1100, delay = 0, startFromSec = 0, label, startAtFrame, children }) => {
+}> = ({ src, kind, width, delay = 0, startFromSec = 0, label, startAtFrame, children }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
+
+  // 素材实际宽高比（图片 onLoad / 视频 loadedmetadata 读取）
+  const [ratio, setRatio] = useState<number | null>(null);
+
+  // 自动尺寸：按宽高比放进安全区，既不超出也不憋屈
+  // width 显式传入时优先（兼容旧调用）；否则按素材比例自适应
+  let autoW = width ?? DEFAULT_W;
+  if (width === undefined && ratio) {
+    // 先按最大宽试，若高度超出安全区则改为按最大高反推宽
+    autoW = SAFE_MAX_W;
+    if (autoW / ratio > SAFE_MAX_H) {
+      autoW = Math.round(SAFE_MAX_H * ratio);
+    }
+    // 竖图/方图别太窄，给个下限
+    autoW = Math.max(autoW, 640);
+  }
 
   const enter = spring({
     frame: frame - delay,
@@ -49,9 +71,9 @@ export const EmbeddedMedia: React.FC<{
       <div
         style={{
           position: "relative",
-          width,
+          width: autoW,
           opacity: enter,
-          transform: `translateX(${x}px) rotateY(${rotateY}deg)`,
+          transform: `translate3d(${x}px, 0, 0) rotateY(${rotateY}deg)`,
           transformOrigin: "center center",
           borderRadius: 14,
           overflow: "hidden",
@@ -59,6 +81,7 @@ export const EmbeddedMedia: React.FC<{
           boxShadow: `0 18px ${shadowBlur}px rgba(0,0,0,${shadowAlpha})`,
           background: "#0B0D10",
           lineHeight: 0,
+          willChange: "transform",
         }}
       >
         {kind === "video" ? (
@@ -69,11 +92,22 @@ export const EmbeddedMedia: React.FC<{
               src={staticFile(src)}
               muted
               startFrom={Math.round(startFromSec * fps)}
+              onLoadedMetadata={(e) => {
+                const v = e.currentTarget;
+                if (v.videoWidth && v.videoHeight) setRatio(v.videoWidth / v.videoHeight);
+              }}
               style={{ width: "100%" }}
             />
           </Sequence>
         ) : (
-          <Img src={staticFile(src)} style={{ width: "100%" }} />
+          <Img
+            src={staticFile(src)}
+            onLoad={(e) => {
+              const im = e.currentTarget;
+              if (im.naturalWidth && im.naturalHeight) setRatio(im.naturalWidth / im.naturalHeight);
+            }}
+            style={{ width: "100%" }}
+          />
         )}
         {children}
       </div>
