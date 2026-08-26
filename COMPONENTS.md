@@ -116,6 +116,28 @@ cd C:\Users\XIAOHAN\WorkBuddy\2026-08-19-15-22-38\paperclip-template
 - FeatureCards：逐张 stagger 上浮的简洁要点卡（无图标徽章），适合纯文字要点
 - CodeCardGroup：带序号+英文徽章+迷你示意图的"代码组件卡"，适合展示"一组有结构的东西"（组件/功能/模块）
 
+### 分镜内过渡
+
+| 组件 | 用途 | 关键参数 |
+|---|---|---|
+| **CrossStage** | 分镜内两段内容的交叉位移过渡（消灭硬切） | `showFrom`、`showTo`（该段内容显示的全局帧区间）、`fadeDur`（过渡时长，默认14帧）、`shift`（位移幅度，默认26px） |
+
+**CrossStage 用法（同一 beat 内先后切换两段内容时）：**
+
+```tsx
+{/* 同一个 beat 内，先放图A，到 11s 换成图B，交界处无缝咬合 */}
+<CrossStage showFrom={beat.from} showTo={beat.from + 150}>
+  <EmbeddedMedia src="xxx/图A.png" kind="image" delay={beat.from + 4} />
+</CrossStage>
+<CrossStage showFrom={beat.from + 150} showTo={beat.to}>
+  <EmbeddedMedia src="xxx/图B.png" kind="image" delay={beat.from + 150} />
+</CrossStage>
+```
+
+- **解决什么**：分镜内两段式展示用 `frame < t ? <A/> : <B/>` 会瞬间硬切（掉帧感）。CrossStage 让 A 结束前 14 帧平滑隐退（上移+淡出）、B 起始 14 帧渐入咬合（下移归位+淡入），交界处重叠无缝
+- **vs BeatWindow**：BeatWindow 管 beat（口播段）**之间**的转场；CrossStage 管**同一 beat 内部**两段内容的先后切换
+- **适用**：一个口播段里要"先展示这个、再换成那个"（如：先放截图A再换成截图B、先架构图再参数卡）
+
 **FlowDiagram vs DrawPathFlow**：
 - FlowDiagram：连线用 spring 淡入，适合"架构展示"
 - DrawPathFlow：连线用 strokeDashoffset 逐步绘制（像电路连通），适合"机制拆解"
