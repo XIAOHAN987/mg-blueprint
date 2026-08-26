@@ -53,6 +53,20 @@ cd C:\Users\XIAOHAN\WorkBuddy\2026-08-19-15-22-38\paperclip-template
 | **FlickerText** | 关键词强调（0.5s 快速闪烁） | `text`、`duration`（帧数）、`flickerCount`、`letterFlickerIntensity`、`strokeColor`、`fillColor` |
 | **TextCard** | 观点卡/金句（normal/warning/quote 三变体） | `kicker`（小标）、`lines`（支持 accent 关键词上色）、`sub`（副文案）、`variant` |
 | **OutlineTitle** | 描边空心大字（标题落版） | `solid`（实心部分）、`outline`（描边部分）、`fontSize` |
+| **NumberTicker** | 数字极速翻滚（里程表效果，0→目标值） | `fromVal`、`toVal`、`decimals`、`startFrame`、`duration`、`prefix`、`suffix` |
+
+**NumberTicker 用法（数据展示必备）：**
+```tsx
+// 价格毫秒级跳字：¥ 0.0 → ¥ 0.4
+¥ <NumberTicker fromVal={0} toVal={0.4} decimals={1} startFrame={beat.from + 8} duration={16} /> / M Tokens
+// 调用量：1 → 20 万亿
+<NumberTicker fromVal={1} toVal={20} startFrame={beat.from + 8} duration={20} suffix=" 万亿" />
+// 参数：0 → 320B
+<NumberTicker fromVal={0} toVal={320} startFrame={cardStart + 2} duration={16} suffix="B" />
+```
+- 用 `tabular-nums` 等宽数字，避免翻滚时宽度抖动
+- `duration` 默认 16 帧（约 0.5 秒）——够快才有"里程表"感，给太多就拖
+- 适用：价格、数量、参数、百分比、跑分，任何"展示一个数字"的场景
 
 **TextReveal 14 种预设**：
 - `per-character-rise`：逐字升起（常用）
@@ -121,6 +135,30 @@ cd C:\Users\XIAOHAN\WorkBuddy\2026-08-19-15-22-38\paperclip-template
 | 组件 | 用途 | 关键参数 |
 |---|---|---|
 | **CrossStage** | 分镜内两段内容的交叉位移过渡（消灭硬切） | `showFrom`、`showTo`（该段内容显示的全局帧区间）、`fadeDur`（过渡时长，默认14帧）、`shift`（位移幅度，默认26px） |
+
+### 入场姿态
+
+| 组件 | 用途 | 关键参数 |
+|---|---|---|
+| **PerspectiveCard** | 2.5D 空间微透视翻板入场（幅度焊死≤16deg，防过头） | `enterFrame`、`preset`（press/fan/bifold）、`index`、`count`、`side` |
+
+**PerspectiveCard 用法（三预设，AI 只能选不能自由调角度）：**
+```tsx
+// press：单面板从斜上方下压翻平（rotateX 14deg→0）
+<PerspectiveCard enterFrame={beat.from + 6} preset="press">...</PerspectiveCard>
+
+// fan：多卡扇形展开（rotateX 16deg + 按 index 的 rotateY 扇形）
+{items.map((item, i) => (
+  <PerspectiveCard key={i} enterFrame={cardStart} preset="fan" index={i} count={items.length}>...</PerspectiveCard>
+))}
+
+// bifold：左右对开门合拢（rotateY ±8deg→0）
+<PerspectiveCard enterFrame={beat.from + 6} preset="bifold" side="left">...</PerspectiveCard>
+<PerspectiveCard enterFrame={beat.from + 6} preset="bifold" side="right">...</PerspectiveCard>
+```
+- **幅度锁死 ≤16deg**：克制的"微透视"，给卡片实体感，不做 90deg 大翻转（那会廉价）
+- 内建 spring 微过冲（scale 0.85→1.025→1.0），沉稳落位
+- **禁止**自己调 rotate 角度——要 3D 就用这三个预设，防止做成 Keynote 式炫酷翻转
 
 **CrossStage 用法（同一 beat 内先后切换两段内容时）：**
 
