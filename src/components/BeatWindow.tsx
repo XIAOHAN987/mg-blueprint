@@ -43,6 +43,8 @@ export const BeatWindow: React.FC<{
   exitRate?: number;
   /** 转场接力：true 时 beat 在 to 之后多存活 LINK_OVERLAP 帧做滑出（与下一个 beat 进场重叠，动势连续） */
   linkOut?: boolean;
+  /** 舞台安全区防撞顶：内容锚点距顶部的最小值（px）。内容过高顶到 FrameChrome 页眉时开启（如 safeTop=130），默认 undefined 不启用 */
+  safeTop?: number;
   children: React.ReactNode;
 }> = ({
   from,
@@ -55,6 +57,7 @@ export const BeatWindow: React.FC<{
   enterRate = 1,
   exitRate = 1,
   linkOut = false,
+  safeTop,
   children,
 }) => {
   const frame = useCurrentFrame();
@@ -67,12 +70,19 @@ export const BeatWindow: React.FC<{
 
   const phase = defaultPhase(holdDur);
 
+  // 防撞顶：safeTop 启用时，锚点 top 不小于 safeTop（内容是 translate(-50%,-50%) 居中，
+  // 锚点 top 即内容垂直中心；内容越高，其顶边 = top - contentH/2，越高越往上顶。
+  // safeTop 直接约束锚点 top 的下限，内容顶边 = safeTop 时刚好不撞页眉——
+  // 由于无法预知内容高度，这里用"锚点 top 不低于 safeTop"作为保守约束）
+  const rawTop = fullBleed ? 85 : 625 + offsetY;
+  const top = safeTop !== undefined && !fullBleed ? Math.max(rawTop, safeTop) : rawTop;
+
   const content = (
     <div
       style={{
         position: "absolute",
         left: fullBleed ? 140 : 1100,
-        top: fullBleed ? 85 : 625 + offsetY,
+        top,
         transform: fullBleed ? "none" : "translate(-50%, -50%)",
       }}
     >
