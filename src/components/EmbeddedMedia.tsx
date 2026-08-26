@@ -35,14 +35,16 @@ export const EmbeddedMedia: React.FC<{
   label?: string;
   /** 视频从这个全局帧开始播放（局部时间从 0 起算，解决跟随全局时间轴导致超出素材长度定格的问题） */
   startAtFrame?: number;
-  /** 长内容滚动：true 时容器固定大小，超长素材在容器内纵向缓慢滚动（适合长截图/长网页/长表格，能看清细节） */
+  /** 长内容滚动：true 时容器固定大小，素材在容器内纵向缓慢漫游（适合长截图/长网页/长表格） */
   scroll?: boolean;
   /** scroll 模式容器高度（默认 620，太长会顶到字幕区） */
   scrollHeight?: number;
-  /** scroll 模式滚动总时长（帧，默认 120=4秒，内容越长给越多） */
-  scrollDuration?: number;
+  /** scroll 漫游位移量（px，默认 150——克制的小位移，不追求滚完整张图，均匀铺满分镜时长，约 15-20px/秒电影运镜感） */
+  scrollAmount?: number;
+  /** scroll 滚动结束帧（传 beat.to，让漫游均匀铺满整个分镜口播时长；不传则默认滚 240 帧） */
+  scrollEndFrame?: number;
   children?: React.ReactNode;
-}> = ({ src, kind, width, delay = 0, startFromSec = 0, label, startAtFrame, scroll = false, scrollHeight = 620, scrollDuration = 120, children }) => {
+}> = ({ src, kind, width, delay = 0, startFromSec = 0, label, startAtFrame, scroll = false, scrollHeight = 620, scrollAmount = 150, scrollEndFrame, children }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
@@ -66,20 +68,21 @@ export const EmbeddedMedia: React.FC<{
     autoW = width ?? 1000;
   }
 
-  // scroll 模式：内容纵向滚动。素材在容器宽度下的实际高度 = autoW / ratio，
-  // 超出容器高度的部分就是要滚动的距离。从顶部滚到底部再停住。
-  const contentH = ratio ? autoW / ratio : scrollHeight;
-  const overflow = Math.max(0, contentH - scrollHeight);
-  // 进场后(delay+26)开始滚，用 scrollDuration 帧滚完，缓入缓出
+  // scroll 模式：慢速微漫游（不是快速扫过长图）。
+  // 只挪一小段（scrollAmount，默认 150px 的克制位移），匀速铺满整个分镜口播时长，
+  // 约 15-20px/秒，像电影运镜缓缓平移，眼睛能看清图上每一行字，没有眩晕感。
+  // 不再"把整图滚到底"（那会导致 300-400px/秒飞速滑过、字迹模糊）。
   const scrollStart = delay + 26;
+  // 滚动持续到分镜结束（scrollEndFrame 由调用方传 beat.to，不传则滚 240 帧≈8秒）
+  const scrollEnd = scrollEndFrame ?? scrollStart + 240;
   const scrollP = scroll
-    ? interpolate(frame, [scrollStart, scrollStart + scrollDuration], [0, 1], {
+    ? interpolate(frame, [scrollStart, scrollEnd], [0, 1], {
         extrapolateLeft: "clamp",
         extrapolateRight: "clamp",
-        easing: Easing.inOut(Easing.cubic),
+        easing: Easing.linear, // 匀速，不要缓入缓出（漫游要的是恒定慢速）
       })
     : 0;
-  const scrollY = -scrollP * overflow;
+  const scrollY = -scrollP * scrollAmount;
 
   const enter = spring({
     frame: frame - delay,
