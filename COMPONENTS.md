@@ -117,8 +117,11 @@ cd C:\Users\XIAOHAN\WorkBuddy\2026-08-19-15-22-38\paperclip-template
 | 组件 | 用途 | 关键参数 |
 |---|---|---|
 | **FrameChrome** | 页眉页脚小字装饰层 | `beatId`（页脚左下跟随 beat 变化方法论编号） |
-| **SrtCaptions** | SRT cue 驱动底部字幕 | `cues`（字幕数组，从 SRT 解析） |
+| **WordKaraokeCaptions** | **中文逐字卡拉OK字幕（中文视频首选）**——正在说的字纯白+强调色下划线 | `cues`（字幕数组） |
+| **SrtCaptions** | SRT cue 整句底部字幕（英文/非逐字场景） | `cues`（字幕数组，从 SRT 解析） |
 | **Captions** | beat 驱动底部字幕（demo 用） | `beats`（分镜表） |
+
+> **字幕组件选型**：中文口播视频**必须用 `WordKaraokeCaptions`**（逐字高亮，替代 snapcn karaoke 的中文不适配——snapcn 会把整句当一个词、行间叠屏）。英文或不需要逐字高亮时用 `SrtCaptions`。
 
 ### 特殊组件（demo 用，可参考风格）
 
