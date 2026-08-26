@@ -83,6 +83,30 @@ cd C:\Users\XIAOHAN\WorkBuddy\2026-08-19-15-22-38\paperclip-template
 | **FlowDiagram** | 节点-连线机制图（连线逐步绘制） | `nodes`（节点数组）、`edges`（连线数组）、`activeNodeId`（当前讲解节点高亮） |
 | **DrawPathFlow** | 流程图线条逐步绘制（带流动圆点） | 同 FlowDiagram，但连线用 strokeDashoffset 逐步绘制，支持 `flow: true`（流动圆点表示执行流） |
 | **FeatureCards** | 能力/要点卡片组（逐张 stagger 上浮） | `items`（卡片数组）、`delay`、`cardWidth` |
+| **CodeCardGroup** | 通用「代码组件卡」组（弹射入场） | `items`（CodeCardItem 数组）、`expandAt`、`collapseAt`、`staggerGap` |
+
+**CodeCardGroup 用法（AI 传内容，组件焊死样式+入场）：**
+
+```tsx
+<CodeCardGroup
+  expandAt={b("b3").from + 55}
+  items={[
+    { name: "StaggerItem", desc: "错峰进 · 统一出", en: "STAGGER", icon: "stagger" },
+    { name: "SlideInItem", desc: "侧滑入 · 停中心", en: "SLIDE", icon: "slide" },
+    { name: "API 网关", desc: "统一入口 · 限流鉴权", en: "GATEWAY", icon: "grid" },
+  ]}
+/>
+```
+
+- **内容**：`items` 传 `{ name, desc, en, icon }`——name=主标题、desc=一行描述、en=右上角英文徽章、icon=迷你示意图
+- **icon**：内置预设 `stagger/slide/punch/breath/pulse/grid`，或传自定义 React 节点
+- **样式焊死**：序号 + 英文徽章 + 示意图 + 细线分区 + 名称 + 描述
+- **入场焊死**：每张卡独立 spring 弹射（damping16/stiffness200/mass0.5 过冲回弹），`staggerGap` 控制错峰（默认 5 帧）
+- **适用**：任何"一组卡片"场景——动效原语/产品功能/特性对比/技术栈。卡片数量 2-6 张最佳
+
+**CodeCardGroup vs FeatureCards**：
+- FeatureCards：逐张 stagger 上浮的简洁要点卡（无图标徽章），适合纯文字要点
+- CodeCardGroup：带序号+英文徽章+迷你示意图的"代码组件卡"，适合展示"一组有结构的东西"（组件/功能/模块）
 
 **FlowDiagram vs DrawPathFlow**：
 - FlowDiagram：连线用 spring 淡入，适合"架构展示"
