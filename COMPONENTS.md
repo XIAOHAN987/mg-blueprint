@@ -865,6 +865,31 @@ public/xxx/
 7. NO 等上一个动画完全结束再启动下一个 —— 按 Slot 表抢跑
 ```
 
+### 红线 3 详解：素材必须装容器（违反 = 画面崩坏的头号来源）
+
+**任何素材（图片/视频/录屏/截图）都不允许直接 `<Img>` 或 `<Video>` 裸贴在画面上**——裸素材没有边框、没有入场、没有推焦，会像"一张图糊在屏幕上"，画面瞬间崩坏。
+
+❌ **违规（画面崩坏的根源）**：
+```tsx
+<Img src={staticFile("xxx/screenshot.png")} style={{ width: 800 }} />  // 裸贴！
+<Video src={staticFile("xxx/clip.mp4")} />  // 裸贴！
+```
+
+✅ **正确（素材必须装进容器组件）**：
+```tsx
+// 嵌入卡片（不占满画面，录屏/截图展示）
+<EmbeddedMedia src="xxx/screenshot.png" kind="image" width={900} delay={beat.from + 4} startAtFrame={beat.from + 4} />
+
+// 全屏聚光（素材作为画面主体，放大展示细节）
+<SpotlightMedia src="xxx/clip.mp4" kind="video" delay={beat.from + 4} zoomAt={beat.from + 30} />
+
+// 素材需要持续推焦呼吸感时，再叠 CameraDrift
+<CameraDrift src="xxx/screenshot.png" kind="image" width={900} startAtFrame={beat.from + 4} focal />
+```
+
+**判断口诀**：只要你想在画面上放任何图片/视频，第一反应必须是"用哪个容器装它"，而不是"贴上去"。容器负责边框/圆角/入场/阴影/推焦，你只管用。
+
+
 ## 10. recipes/ 样例工程（Agent 的 Few-Shot 基准）
 
 `/recipes` 里是两个官方基准样例，**Agent 写新分镜时必须严格仿照它们的 DOM 深度与动效调用方式**，禁止退化回劣质网页模板：
