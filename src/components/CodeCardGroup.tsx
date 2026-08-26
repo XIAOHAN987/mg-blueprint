@@ -2,30 +2,37 @@ import React from "react";
 import { useCurrentFrame, interpolate, Easing, spring, useVideoConfig } from "remotion";
 
 /**
- * PrimitiveCards —— 「动效组件库」组件卡片（v3 代码组件卡风格）。
+ * CodeCardGroup —— 通用「代码组件卡」组（v4 通用版，原 PrimitiveCards）。
  *
- * 不再是大黑块+简陋几何体。改为「代码组件卡」设计语言：
- * 等宽字体序号 + kicker 标签 + 会动的迷你动效示意图 + 细线分区 + 名称 + 描述。
- * 冷静克制、高信息密度，对齐组件库整体调性。
+ * 样式焊死：序号 + 英文标签徽章 + 迷你示意图 + 细线分区 + 名称 + 描述。
+ * 入场焊死：每张卡独立 spring 弹射入场（过冲回弹），错峰依次进场。
+ *
+ * 内容由调用方（AI）通过 items 传入，组件不关心是什么主题——
+ * 动效原语、产品功能、特性对比、技术栈，任何"一组卡片"都能用。
  */
 
 const ACCENT = "#4C8DFF";
 const MONO = "'Consolas','SF Mono','Courier New',monospace";
 
-const PRIMITIVES = [
-  { name: "StaggerItem", desc: "错峰进 · 统一出", en: "STAGGER" },
-  { name: "SlideInItem", desc: "侧滑入 · 停中心", en: "SLIDE" },
-  { name: "PunchThrough", desc: "中心放大穿透", en: "PUNCH" },
-  { name: "CameraBreath", desc: "镜头呼吸", en: "BREATH" },
-];
+export interface CodeCardItem {
+  /** 卡片名称（主标题） */
+  name: string;
+  /** 描述（一行） */
+  desc: string;
+  /** 英文标签徽章（右上角小字，如 "STAGGER"/"API"/"CORE"） */
+  en: string;
+  /** 迷你示意图：内置预设 或 自定义 React 节点 */
+  icon?: "stagger" | "slide" | "punch" | "breath" | "pulse" | "grid" | React.ReactNode;
+}
 
-/** 会动的迷你动效示意图（每张卡一个，直观演示这个原语干嘛的） */
-const DemoIcon: React.FC<{ index: number; demoFrame: number }> = ({ index, demoFrame }) => {
+/** 内置迷你示意图预设（会动的小图标，直观示意） */
+type IconPreset = "stagger" | "slide" | "punch" | "breath" | "pulse" | "grid";
+
+const DemoIcon: React.FC<{ preset: IconPreset; demoFrame: number }> = ({ preset, demoFrame }) => {
   const t = demoFrame % 72;
   const dim = "rgba(237,237,237,0.92)";
 
-  if (index === 0) {
-    // Stagger：三条错峰落下
+  if (preset === "stagger") {
     return (
       <div style={{ display: "flex", gap: 8, alignItems: "flex-end", height: 56 }}>
         {[0, 1, 2, 3].map((k) => {
@@ -44,67 +51,86 @@ const DemoIcon: React.FC<{ index: number; demoFrame: number }> = ({ index, demoF
       </div>
     );
   }
-  if (index === 1) {
-    // Slide：一个块从左滑入停住
+  if (preset === "slide") {
     const p = Easing.out(Easing.cubic)(interpolate(t, [0, 36, 72], [0, 1, 1]));
     return (
       <div style={{ width: 96, height: 56, position: "relative", overflow: "hidden" }}>
         <div style={{
           position: "absolute", left: 0, top: 8, width: 40, height: 40, borderRadius: 9,
-          background: dim,
-          transform: `translate3d(${(p * 52)}px, 0, 0)`, willChange: "transform",
+          background: dim, transform: `translate3d(${p * 52}px, 0, 0)`, willChange: "transform",
         }} />
         <div style={{ position: "absolute", right: 6, top: 24, width: 2, height: 8, background: ACCENT }} />
       </div>
     );
   }
-  if (index === 2) {
-    // Punch：中心块穿透放大
+  if (preset === "punch") {
     const p = interpolate(t, [0, 30, 50, 72], [0.4, 1.1, 2.2, 0.4], {
       extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: Easing.inOut(Easing.cubic),
     });
     const op = interpolate(t, [40, 60, 72], [1, 0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
     return (
       <div style={{ width: 96, height: 56, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={{
-          width: 34, height: 34, borderRadius: 9, background: ACCENT,
-          transform: `scale(${p})`, opacity: op, willChange: "transform, opacity",
-        }} />
+        <div style={{ width: 34, height: 34, borderRadius: 9, background: ACCENT, transform: `scale(${p})`, opacity: op, willChange: "transform, opacity" }} />
       </div>
     );
   }
-  // Breath：描边框呼吸缩放
-  const p = interpolate(t, [0, 36, 72], [1, 1.16, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  if (preset === "breath") {
+    const p = interpolate(t, [0, 36, 72], [1, 1.16, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+    return (
+      <div style={{ width: 96, height: 56, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ width: 52, height: 34, borderRadius: 7, border: `2px solid ${dim}`, transform: `scale(${p})`, willChange: "transform" }} />
+      </div>
+    );
+  }
+  if (preset === "pulse") {
+    const p = interpolate(t, [0, 36, 72], [0.7, 1, 0.7], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+    return (
+      <div style={{ display: "flex", gap: 6, alignItems: "center", height: 56 }}>
+        {[0, 1, 2].map((k) => (
+          <div key={k} style={{
+            width: 10, height: 10, borderRadius: "50%", background: k === 1 ? ACCENT : dim,
+            transform: `scale(${p})`, opacity: 0.5 + p * 0.5, willChange: "transform, opacity",
+          }} />
+        ))}
+      </div>
+    );
+  }
+  // grid：四宫格呼吸
+  const gp = interpolate(t, [0, 36, 72], [1, 1.08, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
   return (
-    <div style={{ width: 96, height: 56, display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <div style={{
-        width: 52, height: 34, borderRadius: 7, border: `2px solid ${dim}`,
-        transform: `scale(${p})`, willChange: "transform",
-      }} />
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 5 }}>
+      {[0, 1, 2, 3].map((k) => (
+        <div key={k} style={{
+          width: 20, height: 20, borderRadius: 5,
+          background: k === 0 ? ACCENT : "rgba(237,237,237,0.25)",
+          transform: `scale(${gp})`, willChange: "transform",
+        }} />
+      ))}
     </div>
   );
 };
 
 const Card: React.FC<{
-  name: string; desc: string; en: string;
-  index: number; count: number; expand: number; demoFrame: number;
-  /** 弹射入场进度（0-1，spring 过冲） */
-  enterP: number;
-}> = ({ name, desc, en, index, count, expand, enterP, demoFrame }) => {
+  item: CodeCardItem;
+  index: number; count: number; enterP: number; demoFrame: number;
+}> = ({ item, index, count, enterP, demoFrame }) => {
   const spread = 348;
   const targetX = (index - (count - 1) / 2) * spread;
 
   // 弹射入场：从屏幕外（下方偏右）快速甩入 + 过冲回弹稳停
-  // enterP 是 spring 值（会 >1 产生过冲）
-  const enterX = (1 - enterP) * 1600;           // 从右侧屏外甩入
-  const enterY = (1 - enterP) * 500;             // 同时从下方来，斜向弹入
-  const enterRot = (1 - enterP) * 14;            // 带倾斜，到位回正
+  const enterX = (1 - enterP) * 1600;
+  const enterY = (1 - enterP) * 500;
+  const enterRot = (1 - enterP) * 14;
   const enterScale = interpolate(Math.max(0, Math.min(1.2, enterP)), [0, 1], [0.7, 1]);
 
-  // 展开阶段的位移（沿用原 expand 逻辑，但现在主要做"到位后保持"）
-  const x = interpolate(expand, [0, 1], [0, 0]) + enterX;
-  const rot = enterRot;
-  const y = enterY;
+  // 示意图：内置预设 or 自定义节点 or 默认脉冲
+  let iconEl: React.ReactNode;
+  if (item.icon && typeof item.icon !== "string") {
+    iconEl = item.icon; // 自定义 React 节点
+  } else {
+    const preset = (item.icon as IconPreset | undefined) || "pulse";
+    iconEl = <DemoIcon preset={preset} demoFrame={demoFrame} />;
+  }
 
   return (
     <div
@@ -119,7 +145,7 @@ const Card: React.FC<{
         background: "#0C0F14",
         border: "1px solid rgba(255,255,255,0.12)",
         borderRadius: 16,
-        transform: `translate3d(${targetX + x}px, ${y}px, 0) rotate(${rot}deg) scale(${enterScale})`,
+        transform: `translate3d(${targetX + enterX}px, ${enterY}px, 0) rotate(${enterRot}deg) scale(${enterScale})`,
         boxShadow: "0 24px 70px rgba(0,0,0,0.55)",
         display: "flex",
         flexDirection: "column",
@@ -128,23 +154,23 @@ const Card: React.FC<{
         willChange: "transform",
       }}
     >
-      {/* 顶行：序号 + kicker 英文标签 */}
+      {/* 顶行：序号 + 英文标签徽章 */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
         <div style={{ fontFamily: MONO, fontSize: 20, color: ACCENT, fontWeight: 700, letterSpacing: 1 }}>
-          0{index + 1}
+          {String(index + 1).padStart(2, "0")}
         </div>
         <div style={{
           fontFamily: MONO, fontSize: 14, color: "rgba(237,237,237,0.4)",
           letterSpacing: 2, border: "1px solid rgba(255,255,255,0.14)",
           borderRadius: 6, padding: "3px 10px",
         }}>
-          {en}
+          {item.en}
         </div>
       </div>
 
-      {/* 迷你动效示意图 */}
+      {/* 迷你示意图 */}
       <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <DemoIcon index={index} demoFrame={demoFrame} />
+        {iconEl}
       </div>
 
       {/* 分区细线 */}
@@ -152,20 +178,25 @@ const Card: React.FC<{
 
       {/* 名称 + 描述 */}
       <div style={{ color: "#EDEDED", fontSize: 26, fontWeight: 700, letterSpacing: "0.01em", textRendering: "geometricPrecision" }}>
-        {name}
+        {item.name}
       </div>
       <div style={{ color: "rgba(237,237,237,0.5)", fontSize: 18, letterSpacing: "0.03em", marginTop: 8, textRendering: "geometricPrecision" }}>
-        {desc}
+        {item.desc}
       </div>
     </div>
   );
 };
 
-export const PrimitiveCards: React.FC<{
+export const CodeCardGroup: React.FC<{
+  /** 卡片内容（AI 传入，2-6 张最佳） */
+  items: CodeCardItem[];
+  /** 弹射入场开始帧 */
   expandAt: number;
+  /** 合拢+滑出开始帧（不传则一直停留） */
   collapseAt?: number;
-  delay?: number;
-}> = ({ expandAt, collapseAt, delay = 0 }) => {
+  /** 卡片错峰间隔（帧，默认 5） */
+  staggerGap?: number;
+}> = ({ items, expandAt, collapseAt, staggerGap = 5 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
@@ -179,19 +210,17 @@ export const PrimitiveCards: React.FC<{
 
   return (
     <div style={{ position: "relative", width: 1560, height: 350, transform: `translate3d(${slideX}px, 0, 0)`, willChange: "transform" }}>
-      {PRIMITIVES.map((p, i) => {
-        // 每张卡独立 spring 弹射入场（错峰 5 帧，过冲回弹）
+      {items.map((item, i) => {
         const enterP = spring({
-          frame: frame - expandAt - i * 5,
+          frame: frame - expandAt - i * staggerGap,
           fps,
           config: { damping: 16, stiffness: 200, mass: 0.5 },
         });
         return (
           <Card
-            key={p.name}
-            name={p.name} desc={p.desc} en={p.en}
-            index={i} count={PRIMITIVES.length}
-            expand={1}
+            key={item.name}
+            item={item}
+            index={i} count={items.length}
             enterP={enterP}
             demoFrame={Math.max(0, frame - expandAt - 20)}
           />
