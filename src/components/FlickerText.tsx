@@ -85,8 +85,9 @@ export const FlickerText: React.FC<{
     letterSpacing: "-0.02em",
     lineHeight: 1.1,
     opacity: enter,
-    transform: `translateY(${Math.round(interpolate(enter, [0, 1], [24, 0]))}px)`,
+    transform: `translate3d(0, ${Math.round(interpolate(enter, [0, 1], [24, 0]))}px, 0)`,
     textRendering: "geometricPrecision",
+    willChange: "transform",
   };
 
   const phaseStyle: React.CSSProperties =
