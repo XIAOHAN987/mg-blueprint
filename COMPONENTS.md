@@ -68,13 +68,19 @@ cd C:\Users\XIAOHAN\WorkBuddy\2026-08-19-15-22-38\paperclip-template
 
 | 组件 | 用途 | 关键参数 |
 |---|---|---|
-| **EmbeddedMedia** | 视频/截图嵌入卡片（伪3D 右侧飞入） | `src`、`kind`（video/image）、`width`、`delay`、`startFromSec`（视频裁剪起点秒）、`label`（左上标签） |
+| **EmbeddedMedia** | 视频/截图嵌入卡片（伪3D 右侧飞入） | `src`、`kind`（video/image）、`width`（可选，不传自动）、`delay`、`startFromSec`、`label`、`scroll`（长内容滚动）、`scrollHeight`、`scrollDuration` |
 | **SpotlightMedia** | 全屏聚光素材段（小框→放大下移→停住） | `src`、`kind`、`delay`、`zoomAt`（放大开始帧）、`caption`（叠加文字） |
 | **HighlightCallout** | 截图关键区域高亮框 | `x/y/w/h`（相对容器百分比）、`label`、`delay`、`accent`（默认蓝） |
 
 **EmbeddedMedia vs SpotlightMedia**：
 - EmbeddedMedia：素材作为"嵌入卡片"，不占满画面（适合录屏/截图展示）
 - SpotlightMedia：素材作为"全屏主体"，小框入场后放大下移成为画面主体（适合需要展示细节的视频/图片）
+
+**EmbeddedMedia 容器尺寸规则（v3，防忽大忽小）：**
+- **不传 `width`**（推荐）：组件读素材宽高比自动算——宽≤1400、高≤760 安全区内自适应，竖图下限 640。横图宽、竖图窄，同比例素材大小稳定，不会忽大忽小
+- **传 `width`**：固定宽度（兼容旧调用）
+- **长内容（长截图/长网页/长表格）**：传 `scroll={true}`，容器固定 1000×620，超长素材在容器内纵向缓慢滚动（4秒缓入缓出滚到底），能看清细节。用 `scrollHeight`/`scrollDuration` 微调
+- **判断**：普通素材→不传 width 让它自适应；明显很长（截图高度 >> 宽度）→ 加 `scroll={true}`
 
 ### 流程/机制图
 

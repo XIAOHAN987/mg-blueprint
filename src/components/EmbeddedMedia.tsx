@@ -8,6 +8,7 @@ import {
   Video,
   Img,
   Sequence,
+  Easing,
 } from "remotion";
 
 /** 画面安全区：素材容器不许超出这个范围（1920x1080 画面，留出标题/字幕/边距） */
@@ -34,8 +35,14 @@ export const EmbeddedMedia: React.FC<{
   label?: string;
   /** 视频从这个全局帧开始播放（局部时间从 0 起算，解决跟随全局时间轴导致超出素材长度定格的问题） */
   startAtFrame?: number;
+  /** 长内容滚动：true 时容器固定大小，超长素材在容器内纵向缓慢滚动（适合长截图/长网页/长表格，能看清细节） */
+  scroll?: boolean;
+  /** scroll 模式容器高度（默认 620，太长会顶到字幕区） */
+  scrollHeight?: number;
+  /** scroll 模式滚动总时长（帧，默认 120=4秒，内容越长给越多） */
+  scrollDuration?: number;
   children?: React.ReactNode;
-}> = ({ src, kind, width, delay = 0, startFromSec = 0, label, startAtFrame, children }) => {
+}> = ({ src, kind, width, delay = 0, startFromSec = 0, label, startAtFrame, scroll = false, scrollHeight = 620, scrollDuration = 120, children }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
@@ -54,6 +61,25 @@ export const EmbeddedMedia: React.FC<{
     // 竖图/方图别太窄，给个下限
     autoW = Math.max(autoW, 640);
   }
+  // scroll 模式：容器宽度固定（不被长图带歪），高度固定 scrollHeight
+  if (scroll) {
+    autoW = width ?? 1000;
+  }
+
+  // scroll 模式：内容纵向滚动。素材在容器宽度下的实际高度 = autoW / ratio，
+  // 超出容器高度的部分就是要滚动的距离。从顶部滚到底部再停住。
+  const contentH = ratio ? autoW / ratio : scrollHeight;
+  const overflow = Math.max(0, contentH - scrollHeight);
+  // 进场后(delay+26)开始滚，用 scrollDuration 帧滚完，缓入缓出
+  const scrollStart = delay + 26;
+  const scrollP = scroll
+    ? interpolate(frame, [scrollStart, scrollStart + scrollDuration], [0, 1], {
+        extrapolateLeft: "clamp",
+        extrapolateRight: "clamp",
+        easing: Easing.inOut(Easing.cubic),
+      })
+    : 0;
+  const scrollY = -scrollP * overflow;
 
   const enter = spring({
     frame: frame - delay,
@@ -72,6 +98,8 @@ export const EmbeddedMedia: React.FC<{
         style={{
           position: "relative",
           width: autoW,
+          // scroll 模式：容器高度固定，内容超出部分被裁切（由内部 translateY 滚动）
+          height: scroll ? scrollHeight : undefined,
           opacity: enter,
           transform: `translate3d(${x}px, 0, 0) rotateY(${rotateY}deg)`,
           transformOrigin: "center center",
@@ -84,6 +112,14 @@ export const EmbeddedMedia: React.FC<{
           willChange: "transform",
         }}
       >
+        {/* scroll 模式：内容包一层做纵向滚动 */}
+        <div
+          style={
+            scroll
+              ? { transform: `translate3d(0, ${scrollY}px, 0)`, willChange: "transform", lineHeight: 0 }
+              : { lineHeight: 0 }
+          }
+        >
         {kind === "video" ? (
           // 用 Sequence 把视频的局部时间轴归零：全局 startAtFrame 帧时，视频从第 0 帧开始播。
           // 否则 <Video> 跟随全局时间（如第 50 秒），素材只有 8 秒就定格在末尾静态图。
@@ -110,6 +146,7 @@ export const EmbeddedMedia: React.FC<{
           />
         )}
         {children}
+        </div>
       </div>
       {label ? (
         <div
