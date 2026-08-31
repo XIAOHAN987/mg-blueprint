@@ -1,5 +1,5 @@
 import React from "react";
-import { useCurrentFrame, interpolate, Easing } from "remotion";
+import { useCurrentFrame, useVideoConfig, interpolate, Easing } from "remotion";
 import { Video, Img, staticFile } from "remotion";
 
 /**
@@ -29,7 +29,7 @@ export const CameraDrift: React.FC<{
   width?: number;
 }> = ({ src, kind, startAtFrame = 0, zoom = 1.08, startFromSec = 0, focal = false, width = 1080 }) => {
   const frame = useCurrentFrame();
-  const fps = 30;
+  const { fps } = useVideoConfig();
 
   const localFrame = Math.max(0, frame - startAtFrame);
 

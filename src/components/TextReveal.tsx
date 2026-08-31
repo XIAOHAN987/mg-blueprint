@@ -296,14 +296,24 @@ function exitOffset(direction: TextRevealDirection, distance: number): { x: numb
   return { x: -from.x + 0, y: -from.y + 0 };
 }
 
-export interface TextRevealProps extends Partial<Omit<TextRevealSettings, "effects" | "exitDirection">> {
+/**
+ * TextReveal —— 防线的最后一道闸。
+ *
+ * 只允许 Agent 传 text / preset / delay / totalFrames / color / align。
+ * fontSize / stagger / distance 等参数全部走预设，不给自由发挥的机会——
+ * 自由发挥 = 字阶失控 = 排版崩溃的根源。
+ */
+export interface TextRevealProps {
   text: string;
-  effects?: TextRevealEffect[] | string;
-  exitDirection?: TextRevealDirection;
-  preset?: TextRevealPreset | "none";
+  /** 必选预设（14 种，覆盖所有使用场景） */
+  preset: TextRevealPreset;
   delay?: number;
   /** 总帧数（用于自动调度镜像退场），默认 1800 */
   totalFrames?: number;
+  /** 覆盖文字颜色（默认 #EDEDED） */
+  color?: string;
+  /** 覆盖对齐方式 */
+  align?: "left" | "center" | "right";
 }
 
 export const TextReveal: React.FC<TextRevealProps> = (props) => {
@@ -311,15 +321,15 @@ export const TextReveal: React.FC<TextRevealProps> = (props) => {
   const { fps } = useVideoConfig();
   const t = frame - (props.delay ?? 0);
 
-  // 合并配置：defaults < props < preset
-  const explicit: Record<string, unknown> = {};
-  for (const [key, value] of Object.entries(props)) {
-    if (value !== undefined && key !== "preset" && key !== "delay" && key !== "totalFrames" && key !== "text")
-      explicit[key] = value;
-  }
-  const preset = props.preset && props.preset !== "none" ? PRESETS[props.preset] : undefined;
-  const merged = { ...DEFAULTS, ...explicit, ...preset } as unknown as TextRevealSettings & { effects: TextRevealEffect[] | string };
-  const exitDirection = (preset?.exitDirection ?? props.exitDirection ?? preset?.direction ?? props.direction ?? DEFAULTS.direction) as TextRevealDirection;
+  // 合并配置：defaults < preset（Agent 只能覆盖 color 和 align）
+  const preset = PRESETS[props.preset];
+  const merged = {
+    ...DEFAULTS,
+    ...preset,
+    ...(props.color !== undefined ? { color: props.color } : {}),
+    ...(props.align !== undefined ? { align: props.align } : {}),
+  } as unknown as TextRevealSettings & { effects: TextRevealEffect[] | string };
+  const exitDirection = (preset?.exitDirection ?? preset?.direction ?? DEFAULTS.direction) as TextRevealDirection;
   const rawEffects: TextRevealEffect[] | string = merged.effects;
   const cfg: TextRevealSettings = {
     ...merged,

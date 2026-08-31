@@ -15,6 +15,9 @@ import {
 const SAFE_MAX_W = 1400;
 const SAFE_MAX_H = 760;
 const DEFAULT_W = 1100;
+/** 大素材模式：视频素材屏占比 ~90%（1728px），手机上 UI 字可读 */
+const LARGE_W = 1728;
+const LARGE_H = 900; // 从 972 降到 900，避免压字幕带（bottom 64 + 字幕高 ~50px）
 
 /**
  * EmbeddedMedia —— AI 视频素材 / 截图的标准嵌入容器（专业科普「素材上桌」）。
@@ -29,6 +32,8 @@ export const EmbeddedMedia: React.FC<{
   kind: "video" | "image";
   /** 固定宽度（可选）。不传则按素材宽高比+画面安全区自动算，避免忽大忽小 */
   width?: number;
+  /** 大素材模式：true 时素材占画幅 ~90%（宽 1728），适合视频素材手机可读 */
+  large?: boolean;
   delay?: number;
   /** 视频裁剪起点（秒） */
   startFromSec?: number;
@@ -44,7 +49,7 @@ export const EmbeddedMedia: React.FC<{
   /** scroll 滚动结束帧（传 beat.to，让漫游均匀铺满整个分镜口播时长；不传则默认滚 240 帧） */
   scrollEndFrame?: number;
   children?: React.ReactNode;
-}> = ({ src, kind, width, delay = 0, startFromSec = 0, label, startAtFrame, scroll = false, scrollHeight = 620, scrollAmount = 150, scrollEndFrame, children }) => {
+}> = ({ src, kind, width, large = false, delay = 0, startFromSec = 0, label, startAtFrame, scroll = false, scrollHeight = 620, scrollAmount = 150, scrollEndFrame, children }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
@@ -53,12 +58,14 @@ export const EmbeddedMedia: React.FC<{
 
   // 自动尺寸：按宽高比放进安全区，既不超出也不憋屈
   // width 显式传入时优先（兼容旧调用）；否则按素材比例自适应
-  let autoW = width ?? DEFAULT_W;
+  const maxW = large ? LARGE_W : SAFE_MAX_W;
+  const maxH = large ? LARGE_H : SAFE_MAX_H;
+  let autoW = width ?? (large ? LARGE_W : DEFAULT_W);
   if (width === undefined && ratio) {
     // 先按最大宽试，若高度超出安全区则改为按最大高反推宽
-    autoW = SAFE_MAX_W;
-    if (autoW / ratio > SAFE_MAX_H) {
-      autoW = Math.round(SAFE_MAX_H * ratio);
+    autoW = maxW;
+    if (autoW / ratio > maxH) {
+      autoW = Math.round(maxH * ratio);
     }
     // 竖图/方图别太窄，给个下限
     autoW = Math.max(autoW, 640);
@@ -155,7 +162,8 @@ export const EmbeddedMedia: React.FC<{
         <div
           style={{
             position: "absolute",
-            top: -14,
+            // large 模式素材顶边距画面顶部太近，label 翻进素材内部
+            top: large ? 18 : -14,
             left: 18,
             opacity: enter,
             background: "#10141A",

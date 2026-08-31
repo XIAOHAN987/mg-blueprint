@@ -1,6 +1,11 @@
 import React from "react";
 import { useCurrentFrame, useVideoConfig, interpolate } from "remotion";
-import type { Cue } from "../beats/mgintro-cues";
+/** SRT cue 结构（内联定义，原版引用的 mgintro-cues 模块不存在） */
+export interface Cue {
+  start: number;
+  end: number;
+  text: string;
+}
 
 /**
  * WordKaraokeCaptions —— 逐词卡拉OK字幕（回形针/科普解说标配）。

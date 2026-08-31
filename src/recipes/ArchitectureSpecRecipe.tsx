@@ -133,7 +133,6 @@ export const DeepseekVideo: React.FC = () => {
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 30 }}>
             <TextReveal
               text="框架本身"
-              fontSize={64}
               delay={b("b7").from + 4}
               preset="per-character-rise"
               color="#EDEDED"
@@ -178,7 +177,6 @@ export const DeepseekVideo: React.FC = () => {
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 30 }}>
             <TextReveal
               text="目标是产出内容、拿到结果"
-              fontSize={64}
               delay={b("b9").from + 4}
               preset="staggered-fade-up"
               color="#EDEDED"

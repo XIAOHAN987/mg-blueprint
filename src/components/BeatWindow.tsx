@@ -1,7 +1,8 @@
 import React from "react";
-import { useCurrentFrame } from "remotion";
+import { useCurrentFrame, interpolate } from "remotion";
 import { StaggerItem, SlideInItem, PunchThroughItem } from "../motion/primitives";
 import { defaultPhase, Direction } from "../motion/motion";
+import { EASE } from "../theme";
 
 /**
  * BeatWindow —— beat 级显隐窗口（锁定相机构图下的元素交接协议，v2 丝滑转场版）。
@@ -23,6 +24,7 @@ import { defaultPhase, Direction } from "../motion/motion";
  * - mode="stagger"（默认）：多元素错峰进场，统一方向出场
  * - mode="slide"：单元素从任意侧滑入，停在中心
  * - mode="punch"：单主角中心停稳后原地急剧放大穿透视野消失
+ * - mode="hold"：只进不出——内容进场后停留在画面上（用于渐进揭示的旧内容靠边让位）
  */
 
 const EXIT_FRAMES = 16; // smooth-motion 出场帧数（14-16f）
@@ -34,7 +36,7 @@ export const BeatWindow: React.FC<{
   to: number;
   offsetY?: number;
   fullBleed?: boolean;
-  mode?: "stagger" | "slide" | "punch";
+  mode?: "stagger" | "slide" | "punch" | "hold";
   enterFrom?: Direction;
   exitTo?: Direction;
   /** 进场速度倍率：<1 更快提前，>1 更慢拖后 */
@@ -89,6 +91,29 @@ export const BeatWindow: React.FC<{
       {children}
     </div>
   );
+
+  // hold 模式：只进不出，内容停留到 beat 结束
+  if (mode === "hold") {
+    const enterT = interpolate(frame, [from, from + 22], [0, 1], {
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp",
+      easing: EASE.smooth,
+    });
+    const y = Math.round((1 - enterT) * 40);
+    const opacity = interpolate(enterT, [0, 0.3], [0, 1], { extrapolateRight: "clamp" });
+
+    return (
+      <div
+        style={{
+          transform: `translateY(${y}px)`,
+          opacity,
+          willChange: "transform, opacity",
+        }}
+      >
+        {content}
+      </div>
+    );
+  }
 
   // 用 smooth-motion 原语做丝滑出入场
   if (mode === "punch") {

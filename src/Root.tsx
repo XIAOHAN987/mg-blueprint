@@ -2,15 +2,15 @@ import React from "react";
 import { Composition } from "remotion";
 import { PaperclipDemo } from "./recipes/HardwareAnalysisRecipe";
 import { DeepseekVideo } from "./recipes/ArchitectureSpecRecipe";
-import { MgIntro } from "./MgIntro";
+import { OxAlphaVideo } from "./OxAlphaVideo";
 
 export const Root: React.FC = () => {
   return (
     <>
       <Composition
-        id="MgIntro"
-        component={MgIntro}
-        durationInFrames={2865}
+        id="OxAlphaVideo"
+        component={OxAlphaVideo}
+        durationInFrames={1635}
         fps={30}
         width={1920}
         height={1080}
