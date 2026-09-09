@@ -13,8 +13,8 @@ import { interpolate, Easing } from "remotion";
 /** 进场：Expo 衰减——起步极快，末端指数级减速，稳稳停住 */
 export const easeOutExpo = Easing.out(Easing.exp);
 
-/** 出场：Quint 加速——起步温柔，末端猛烈甩出视野 */
-export const easeInQuint = Easing.in(Easing.poly(5));
+/** 出场：自然加速甩出视野（poly 3.5 兼具起步响应与末端甩速） */
+export const easeInQuint = Easing.in(Easing.poly(3.5));
 
 /** 穿透缩放：接近立方加速，穿透瞬间足够"剧" */
 export const easeInCubic = Easing.in(Easing.poly(3));

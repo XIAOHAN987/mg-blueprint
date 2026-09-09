@@ -12,9 +12,9 @@ import { loadFont as loadJetBrainsMono } from "@remotion/google-fonts/JetBrainsM
 
 // ──────────────────────────── 字体（真加载）────────────────────────────
 
-loadInter("normal", { weights: ["400", "500", "700"] });
-loadNotoSansSC("normal", { weights: ["400", "500", "700"] });
-loadJetBrainsMono("normal", { weights: ["400", "500"] });
+loadInter("normal", { weights: ["400", "700"], subsets: ["latin"], ignoreTooManyRequestsWarning: true });
+loadNotoSansSC("normal", { weights: ["400", "700"], subsets: ["chinese-simplified"], ignoreTooManyRequestsWarning: true });
+loadJetBrainsMono("normal", { weights: ["400"], subsets: ["latin"], ignoreTooManyRequestsWarning: true });
 
 export const FONT = {
   /** 标题：中文优先 Noto Sans SC，英文/数字 Inter */

@@ -189,11 +189,11 @@ export const DotMatrixBackground: React.FC<{
   opacity?: number;
 }> = ({
   frequency = 1,
-  speed = 1,
-  cellSize = 12,
-  gamma = 4,
-  paletteBias = -4,
-  opacity = 0.4,
+  speed = 0.5,
+  cellSize = 14,
+  gamma = 3,
+  paletteBias = 0,
+  opacity = 0.35,
 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();

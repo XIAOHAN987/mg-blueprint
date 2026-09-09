@@ -38,6 +38,12 @@ export const TextCard: React.FC<{
         fontFamily: '"Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif',
         textAlign: align,
         maxWidth: 1500,
+        backgroundColor: "transparent",
+        WebkitFontSmoothing: "antialiased",
+        MozOsxFontSmoothing: "grayscale",
+        transform: "translateZ(0)",
+        willChange: "transform",
+        isolation: "isolate",
       }}
     >
       {kicker ? (
@@ -64,13 +70,11 @@ export const TextCard: React.FC<{
             style={{
               opacity: enter,
               transform: `translateY(${Math.round(interpolate(enter, [0, 1], [26, 0]))}px)`,
-              filter: `blur(${interpolate(enter, [0, 1], [8, 0])}px)`,
               textRendering: "geometricPrecision",
               fontSize,
               fontWeight: 700,
               lineHeight: 1.25,
               color: line.accent ? accentColor : "#EDEDED",
-              textShadow: line.accent ? `0 0 40px ${accentColor}44` : "none",
             }}
           >
             {line.text}

@@ -103,7 +103,7 @@ export const EmbeddedMedia: React.FC<{
   const shadowAlpha = interpolate(enter, [0, 1], [0.05, 0.45]);
 
   return (
-    <div style={{ perspective: 1400 }}>
+    <div style={{ isolation: "isolate" }}>
       <div
         style={{
           position: "relative",
@@ -111,7 +111,7 @@ export const EmbeddedMedia: React.FC<{
           // scroll 模式：容器高度固定，内容超出部分被裁切（由内部 translateY 滚动）
           height: scroll ? scrollHeight : undefined,
           opacity: enter,
-          transform: `translate3d(${x}px, 0, 0) rotateY(${rotateY}deg)`,
+          transform: `translate(${x}px, 0)`,
           transformOrigin: "center center",
           borderRadius: 14,
           overflow: "hidden",
@@ -119,7 +119,6 @@ export const EmbeddedMedia: React.FC<{
           boxShadow: `0 18px ${shadowBlur}px rgba(0,0,0,${shadowAlpha})`,
           background: "#0B0D10",
           lineHeight: 0,
-          willChange: "transform",
         }}
       >
         {/* scroll 模式：内容包一层做纵向滚动 */}

@@ -140,10 +140,10 @@ export const SlideInItem: React.FC<{
   const [fx, fy] = dirVec(from);
   const [ex, ey] = dirVec(exitTo);
   const isHorizontal = fx !== 0;
-  const fromDist = isHorizontal ? 1200 : 700;
+  const fromDist = isHorizontal ? 1850 : 1000;
 
-  const x = composeOffset(enter, exit, fx * fromDist, ex * 1700);
-  const y = composeOffset(enter, exit, fy * fromDist, ey * 1200);
+  const x = composeOffset(enter, exit, fx * fromDist, ex * 1850);
+  const y = composeOffset(enter, exit, fy * fromDist, ey * 1100);
   // 垂直方向进场时加一点横向漂移，水平进场时加一点纵向沉浮——抛物线惯性
   const cross = isHorizontal ? (from === "left" ? 60 : -60) : (from === "top" ? -60 : 60);
   const crossOffset = interpolate(enter, [0, 1], [isHorizontal ? cross : 0, 0], {

@@ -63,12 +63,13 @@ export const BeatWindow: React.FC<{
   children,
 }) => {
   const frame = useCurrentFrame();
-  // linkOut：beat 内容存活到 to + LINK_OVERLAP，把出场滑走放进转场重叠区
-  const endFrame = linkOut ? to + LINK_OVERLAP : to;
+  // linkOut：beat 内容存活到 to + 10 帧，把出场滑走放进转场重叠区
+  const endFrame = linkOut ? to + 10 : to;
   if (frame < from || frame >= endFrame) return null;
 
-  const beatDur = endFrame - from;
-  const holdDur = beatDur - EXIT_FRAMES - 22; // 进场 22f + 出场 16f，其余 hold
+  // 当 linkOut 为 true 时，出场提前 8 帧启动，确保新场景进入时旧场景已完成 ~40% 位移，绝不在屏幕中央重叠重影
+  const exitAdvance = linkOut ? 8 : 0;
+  const holdDur = Math.max(1, (to - from) - EXIT_FRAMES - 22 + (EXIT_FRAMES - exitAdvance));
 
   const phase = defaultPhase(holdDur);
 
@@ -107,7 +108,7 @@ export const BeatWindow: React.FC<{
         style={{
           transform: `translateY(${y}px)`,
           opacity,
-          willChange: "transform, opacity",
+          backgroundColor: "transparent",
         }}
       >
         {content}
