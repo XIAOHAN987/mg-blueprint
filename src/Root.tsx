@@ -3,11 +3,29 @@ import { Composition } from "remotion";
 import { Image25Video } from "./Image25Video";
 import { PaperclipDemo } from "./recipes/HardwareAnalysisRecipe";
 import { DeepseekVideo } from "./recipes/ArchitectureSpecRecipe";
+import { NewParadigmRecipe } from "./recipes/NewParadigmRecipe";
 import { OxAlphaVideo } from "./OxAlphaVideo";
+import { NewParadigmVideo } from "./NewParadigmVideo";
 
 export const Root: React.FC = () => {
   return (
     <>
+      <Composition
+        id="NewParadigmVideo"
+        component={NewParadigmVideo}
+        durationInFrames={3143}
+        fps={30}
+        width={1920}
+        height={1080}
+      />
+      <Composition
+        id="NewParadigmRecipe"
+        component={NewParadigmRecipe}
+        durationInFrames={3143}
+        fps={30}
+        width={1920}
+        height={1080}
+      />
       <Composition
         id="Image25Video"
         component={Image25Video}

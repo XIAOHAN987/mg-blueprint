@@ -30,7 +30,7 @@
 | 录屏/产品片段 | 可选 | `.mp4`，要展示的画面 |
 | 截图/图片 | 可选 | `.png`，要讲解的界面 |
 
-> 没素材也能先看效果：直接跑 `npm run studio`，左上角切到 `HardwareAnalysisRecipe` 或 `ArchitectureSpecRecipe`，这两个是自带的完整示例。
+> 没素材也能先看效果：直接跑 `npm run studio`，左上角切到 `NewParadigmRecipe`、`HardwareAnalysisRecipe` 或 `ArchitectureSpecRecipe`，这些是自带的完整示例。
 
 **2. 对你的 Agent 说一句话**：
 
@@ -90,14 +90,22 @@ src/
 │  ├─ FeatureCards.tsx      # 能力卡片组
 │  ├─ FrameChrome.tsx       # 页眉页脚装饰层
 │  ├─ SrtCaptions.tsx       # SRT 驱动字幕
+│  ├─ WordKaraokeCaptions.tsx # 逐字卡拉OK高亮字幕
+│  ├─ LatencyTokenGauge.tsx # 延迟往返与 Token 膨胀双轨标尺
+│  ├─ TerminalMatrix.tsx     # 仿真 Bash 终端打字机与能力卡片组
+│  ├─ ContextFlowDiagram.tsx # 数据流向图（上下文撑爆 vs 本地管道过滤）
+│  ├─ BitterLessonCard.tsx   # 瑞士平面风格大字阶哲学金句卡
+│  ├─ PromptGuidanceCard.tsx # 实操心智模型与收尾关注引导卡
 │  └─ ...
 ├─ beats/               # 分镜表
 │  ├─ schema.ts             # BeatMap 类型定义
 │  ├─ demo.ts               # demo 分镜表（CD/8bit 科普）
-│  └─ deepseek.ts           # DeepSeek 视频分镜表
+│  ├─ deepseek.ts           # DeepSeek 视频分镜表
+│  └─ new-paradigm.ts       # 新范式分镜表与打点
 ├─ recipes/             # Agent Few-Shot 基准样例（写新分镜必须仿照）
 │  ├─ HardwareAnalysisRecipe.tsx  # 底层素材推焦+几何高亮+单点超大字阶
-│  └─ ArchitectureSpecRecipe.tsx  # 冷灰底+锁定相机 zoom-only+单句核心论点
+│  ├─ ArchitectureSpecRecipe.tsx  # 冷灰底+锁定相机 zoom-only+单句核心论点
+│  └─ NewParadigmRecipe.tsx       # 3D实录+MG数据流指标+文字视频解耦无黑框范式
 └─ Root.tsx             # Composition 注册
 
 public/               # 素材（视频/截图/音频/字幕）
