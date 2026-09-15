@@ -19,7 +19,7 @@ export const TextCard: React.FC<{
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  const accentColor = variant === "warning" ? "#E24B4A" : "#4C8DFF";
+  const accentColor = variant === "warning" ? "#FF5533" : "#4C8DFF";
   const fontSize = variant === "quote" ? 76 : 64;
 
   const kickerEnter = spring({
@@ -38,7 +38,11 @@ export const TextCard: React.FC<{
         fontFamily: '"Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif',
         textAlign: align,
         maxWidth: 1500,
-        backgroundColor: "transparent",
+        backgroundColor: variant === "warning" ? "rgba(11, 13, 16, 0.75)" : "transparent",
+        padding: variant === "warning" ? "20px 36px" : "0",
+        borderRadius: 16,
+        border: variant === "warning" ? "1px solid rgba(255, 85, 51, 0.25)" : "none",
+        backdropFilter: variant === "warning" ? "blur(8px)" : "none",
         WebkitFontSmoothing: "antialiased",
         MozOsxFontSmoothing: "grayscale",
         transform: "translateZ(0)",
@@ -50,9 +54,11 @@ export const TextCard: React.FC<{
         <div
           style={{
             opacity: kickerEnter,
-            color: "rgba(255,255,255,0.45)",
+            color: variant === "warning" ? "#FF5533" : "rgba(255,255,255,0.6)",
             fontSize: 24,
+            fontWeight: 700,
             letterSpacing: "0.25em",
+            textShadow: "0 2px 12px rgba(0, 0, 0, 0.9)",
           }}
         >
           {kicker}
@@ -72,9 +78,13 @@ export const TextCard: React.FC<{
               transform: `translateY(${Math.round(interpolate(enter, [0, 1], [26, 0]))}px)`,
               textRendering: "geometricPrecision",
               fontSize,
-              fontWeight: 700,
+              fontWeight: 800,
               lineHeight: 1.25,
-              color: line.accent ? accentColor : "#EDEDED",
+              color: line.accent ? accentColor : "#FFFFFF",
+              textShadow:
+                line.accent && variant === "warning"
+                  ? "0 2px 16px rgba(0, 0, 0, 0.95), 0 0 32px rgba(255, 85, 51, 0.5)"
+                  : "0 2px 16px rgba(0, 0, 0, 0.95), 0 0 24px rgba(0, 0, 0, 0.8)",
             }}
           >
             {line.text}
