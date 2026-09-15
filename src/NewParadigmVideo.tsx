@@ -11,6 +11,8 @@ import { NewParadigmFrameChrome } from "./NewParadigmFrameChrome";
 import { LatencyTokenGauge } from "./components/LatencyTokenGauge";
 import { TerminalMatrix } from "./components/TerminalMatrix";
 import { ContextFlowDiagram } from "./components/ContextFlowDiagram";
+import { RenameScriptCard } from "./components/RenameScriptCard";
+import { HarnessSecurityCard } from "./components/HarnessSecurityCard";
 import { BitterLessonCard } from "./components/BitterLessonCard";
 import { PromptGuidanceCard } from "./components/PromptGuidanceCard";
 import { newParadigmBeatMap } from "./beats/new-paradigm";
@@ -50,7 +52,7 @@ export const NewParadigmVideo: React.FC = () => {
         <BeatWindow
           from={b("b1").from}
           to={b("b1").to}
-          offsetY={70}
+          offsetY={30}
           mode="slide"
           enterFrom="bottom"
           exitTo="left"
@@ -59,7 +61,7 @@ export const NewParadigmVideo: React.FC = () => {
           <EmbeddedMedia
             src="new-paradigm/shot_1_choice.mp4"
             kind="video"
-            width={1080}
+            width={1020}
             delay={b("b1").from + 4}
             startAtFrame={b("b1").from}
             label="CASE 01 // TOOL CLUSTER VS BASH TERMINAL"
@@ -70,7 +72,7 @@ export const NewParadigmVideo: React.FC = () => {
         <BeatWindow
           from={b("b2").from}
           to={b("b2").to}
-          offsetY={-25}
+          offsetY={-45}
           mode="slide"
           enterFrom="right"
           exitTo="left"
@@ -79,7 +81,7 @@ export const NewParadigmVideo: React.FC = () => {
           <EmbeddedMedia
             src="new-paradigm/shot_2_stores.mp4"
             kind="video"
-            large
+            width={1380}
             delay={b("b2").from + 2}
             startAtFrame={b("b2").from}
             label="OLD PARADIGM // FRAGMENTED SPECIALIZED STORES"
@@ -90,7 +92,7 @@ export const NewParadigmVideo: React.FC = () => {
         <BeatWindow
           from={b("b3").from}
           to={b("b3").to}
-          offsetY={-25}
+          offsetY={-35}
           mode="slide"
           enterFrom="right"
           exitTo="left"
@@ -112,7 +114,7 @@ export const NewParadigmVideo: React.FC = () => {
         <BeatWindow
           from={b("b4").from}
           to={b("b4").to}
-          offsetY={-25}
+          offsetY={-45}
           mode="slide"
           enterFrom="right"
           exitTo="left"
@@ -121,7 +123,7 @@ export const NewParadigmVideo: React.FC = () => {
           <EmbeddedMedia
             src="new-paradigm/shot_3_apartment.mp4"
             kind="video"
-            large
+            width={1380}
             delay={b("b4").from + 2}
             startAtFrame={b("b4").from}
             label="NEW PARADIGM // COMPLETE APARTMENT SUITE"
@@ -132,7 +134,7 @@ export const NewParadigmVideo: React.FC = () => {
         <BeatWindow
           from={b("b5").from}
           to={b("b5").to}
-          offsetY={-25}
+          offsetY={-35}
           mode="slide"
           enterFrom="right"
           exitTo="left"
@@ -149,11 +151,11 @@ export const NewParadigmVideo: React.FC = () => {
           </div>
         </BeatWindow>
 
-        {/* Act 6: 案例 1 —— 批量重命名变量分屏对比（00:39.2 - 00:53.7） */}
+        {/* Act 6A: 案例 1 —— 批量重命名变量 视频演示（00:39.2 - 00:47.2，前8秒） */}
         <BeatWindow
           from={b("b6").from}
-          to={b("b6").to}
-          offsetY={-25}
+          to={b("b6").from + 240}
+          offsetY={-45}
           mode="slide"
           enterFrom="right"
           exitTo="left"
@@ -162,18 +164,39 @@ export const NewParadigmVideo: React.FC = () => {
           <EmbeddedMedia
             src="new-paradigm/shot_4_rename.mp4"
             kind="video"
-            large
+            width={1380}
             delay={b("b6").from + 2}
             startAtFrame={b("b6").from}
             label="CASE 01 // 5-6 TOOL ROUNDTRIPS VS 1 BASH SCRIPT"
           />
         </BeatWindow>
 
-        {/* Act 7A: 案例 2 —— 超大日志处理 视频演示（00:53.7 - 01:01.7） */}
+        {/* Act 6B: 案例 1 —— 视频播放完毕后无缝接力：一行脚本搞定对比卡（00:47.2 - 00:53.7，后6.5秒） */}
+        <BeatWindow
+          from={b("b6").from + 240}
+          to={b("b6").to}
+          offsetY={-35}
+          mode="slide"
+          enterFrom="right"
+          exitTo="left"
+          linkOut={true}
+        >
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 22 }}>
+            <TextCard
+              kicker="AUTOMATION REFACTOR"
+              delay={b("b6").from + 242}
+              lines={[{ text: "它自己写个脚本，一行就能全部搞定", accent: true }]}
+              sub="告别查找、引用、逐文件重命名的反复多轮往返"
+            />
+            <RenameScriptCard delay={b("b6").from + 246} />
+          </div>
+        </BeatWindow>
+
+        {/* Act 7A: 案例 2 —— 超大日志处理 视频演示（00:53.7 - 01:01.7，前8秒） */}
         <BeatWindow
           from={b("b7").from}
           to={b("b7").from + 240}
-          offsetY={-25}
+          offsetY={-45}
           mode="slide"
           enterFrom="right"
           exitTo="left"
@@ -182,18 +205,18 @@ export const NewParadigmVideo: React.FC = () => {
           <EmbeddedMedia
             src="new-paradigm/shot_5_logs.mp4"
             kind="video"
-            large
+            width={1380}
             delay={b("b7").from + 2}
             startAtFrame={b("b7").from}
             label="CASE 02 // 50GB LOGS FLOODING VS EXTERNAL PIPELINE"
           />
         </BeatWindow>
 
-        {/* Act 7B: 案例 2 —— 数据流向架构穿透图（01:01.7 - 01:08.5） */}
+        {/* Act 7B: 案例 2 —— 视频播放完毕后接力：数据流向架构穿透图（01:01.7 - 01:08.5，后6.8秒） */}
         <BeatWindow
           from={b("b7").from + 240}
           to={b("b7").to}
-          offsetY={-25}
+          offsetY={-35}
           mode="slide"
           enterFrom="right"
           exitTo="left"
@@ -210,11 +233,11 @@ export const NewParadigmVideo: React.FC = () => {
           </div>
         </BeatWindow>
 
-        {/* Act 8: 安全防护 —— Harness 保安进程隔离（01:08.5 - 01:19.9） */}
+        {/* Act 8A: 安全防护 —— Harness 保安 视频演示（01:08.5 - 01:16.5，前8秒） */}
         <BeatWindow
           from={b("b8").from}
-          to={b("b8").to}
-          offsetY={-25}
+          to={b("b8").from + 240}
+          offsetY={-45}
           mode="slide"
           enterFrom="right"
           exitTo="left"
@@ -223,18 +246,31 @@ export const NewParadigmVideo: React.FC = () => {
           <EmbeddedMedia
             src="new-paradigm/shot_6_guard.mp4"
             kind="video"
-            large
+            width={1380}
             delay={b("b8").from + 2}
             startAtFrame={b("b8").from}
             label="SECURITY LAYER // HARNESS PROCESS ISOLATION"
           />
         </BeatWindow>
 
+        {/* Act 8B: 安全防护 —— 视频放完后接力：Harness 架构隔离卡（01:16.5 - 01:19.9，后3.4秒） */}
+        <BeatWindow
+          from={b("b8").from + 240}
+          to={b("b8").to}
+          offsetY={-35}
+          mode="slide"
+          enterFrom="right"
+          exitTo="left"
+          linkOut={true}
+        >
+          <HarnessSecurityCard delay={b("b8").from + 242} />
+        </BeatWindow>
+
         {/* Act 9: 哲学高潮 —— The Bitter Lesson 苦涩教训（01:19.9 - 01:33.8） */}
         <BeatWindow
           from={b("b9").from}
           to={b("b9").to}
-          offsetY={-25}
+          offsetY={-35}
           mode="slide"
           enterFrom="right"
           exitTo="left"
@@ -247,7 +283,7 @@ export const NewParadigmVideo: React.FC = () => {
         <BeatWindow
           from={b("b10").from}
           to={b("b10").to}
-          offsetY={-25}
+          offsetY={-35}
           mode="hold"
           enterFrom="right"
         >
