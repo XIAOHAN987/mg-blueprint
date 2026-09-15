@@ -27,10 +27,11 @@ export const GridBackground: React.FC<{
         width: planeW,
         height: planeH,
         backgroundImage: `
-          linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px),
-          linear-gradient(rgba(255,255,255,0.09) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255,255,255,0.09) 1px, transparent 1px)
+          linear-gradient(rgba(255,255,255,0.055) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255,255,255,0.055) 1px, transparent 1px),
+          linear-gradient(rgba(255,255,255,0.11) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255,255,255,0.11) 1px, transparent 1px),
+          radial-gradient(ellipse 75% 70% at 50% 50%, #304F7C 0%, #1D3558 60%, #0F1F35 100%)
         `,
         backgroundSize: `
           ${cell}px ${cell}px,

@@ -340,6 +340,7 @@ export const DotMatrixBackground: React.FC<{
         opacity,
         pointerEvents: "none",
         lineHeight: 0,
+        mixBlendMode: "screen",
       }}
     >
       <div ref={containerRef} style={{ position: "absolute", inset: 0 }} />
