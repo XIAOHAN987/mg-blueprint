@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import { AbsoluteFill, Audio, staticFile } from "remotion";
 import { CameraRig } from "./components/CameraRig";
 import { GridBackground } from "./components/GridBackground";
@@ -28,8 +28,8 @@ export const NewParadigmVideo: React.FC = () => {
       <Audio src={staticFile("new-paradigm/voiceover.wav")} />
 
       <CameraRig beatMap={newParadigmBeatMap} viewWidth={1920} viewHeight={1080}>
+        <DotMatrixBackground opacity={0.35} />
         <GridBackground width={stage.width} height={stage.height} />
-        <DotMatrixBackground opacity={0.4} />
 
         {/* Act 1: 开场钩子 —— 专用工具还是 Bash（00:00 - 00:09.5） */}
         <BeatWindow

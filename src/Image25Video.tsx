@@ -67,8 +67,8 @@ export const Image25Video: React.FC = () => {
       <Audio src={staticFile("image2-5/voiceover.mp3")} />
 
       <CameraRig beatMap={image25BeatMap} viewWidth={1920} viewHeight={1080}>
+        <DotMatrixBackground opacity={0.35} />
         <GridBackground width={stage.width} height={stage.height} />
-        <DotMatrixBackground opacity={0.4} />
 
         {/* Act 1: 开场钩子 —— Image 2.5 震撼发布（观点标题层，独立图层无硬件视频遮挡） */}
         <BeatWindow

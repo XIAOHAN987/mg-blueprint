@@ -336,10 +336,12 @@ export const DotMatrixBackground: React.FC<{
     <div
       style={{
         position: "absolute",
-        inset: 0,
+        inset: -40,
         opacity,
         pointerEvents: "none",
         lineHeight: 0,
+        filter: "blur(16px)",
+        transform: "scale(1.05)",
         mixBlendMode: "screen",
       }}
     >
