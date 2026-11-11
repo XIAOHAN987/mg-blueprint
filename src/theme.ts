@@ -1,7 +1,5 @@
 import { Easing } from "remotion";
-import { loadFont as loadInter } from "@remotion/google-fonts/Inter";
-import { loadFont as loadNotoSansSC } from "@remotion/google-fonts/NotoSansSC";
-import { loadFont as loadJetBrainsMono } from "@remotion/google-fonts/JetBrainsMono";
+import "./fonts";
 
 /**
  * theme.ts —— 全工程唯一设计 token 出口
@@ -10,11 +8,8 @@ import { loadFont as loadJetBrainsMono } from "@remotion/google-fonts/JetBrainsM
  * 改主题 = 改这里，全工程生效。
  */
 
-// ──────────────────────────── 字体（真加载）────────────────────────────
+// ──────────────────────────── 字体（由 fonts.ts 统一加载，断网时回退系统字体）────────────────────────────
 
-loadInter("normal", { weights: ["400", "700"], subsets: ["latin"], ignoreTooManyRequestsWarning: true });
-loadNotoSansSC("normal", { weights: ["400", "700"], subsets: ["chinese-simplified"], ignoreTooManyRequestsWarning: true });
-loadJetBrainsMono("normal", { weights: ["400"], subsets: ["latin"], ignoreTooManyRequestsWarning: true });
 
 export const FONT = {
   /** 标题：中文优先 Noto Sans SC，英文/数字 Inter */

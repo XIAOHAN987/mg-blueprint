@@ -1,5 +1,5 @@
 import React from "react";
-import { AbsoluteFill, useCurrentFrame, interpolate, staticFile, CanvasImage } from "remotion";
+import { AbsoluteFill, useCurrentFrame, interpolate } from "remotion";
 import { CameraRig } from "../components/CameraRig";
 import { GridBackground } from "../components/GridBackground";
 import { OutlineTitle } from "../components/OutlineTitle";
@@ -99,13 +99,6 @@ export const PaperclipDemo: React.FC = () => {
         />
         {/* 字幕固定在屏幕上（不进相机层） */}
         <Captions beats={beats} />
-      </AbsoluteFill><CanvasImage
-        src={staticFile("QQ_1787265500978.png")}
-        style={{
-          position: "absolute",
-          translate: "203px 110px",
-          width: 1514,
-          height: 860
-        }} /></>
+      </AbsoluteFill></>
   );
 };

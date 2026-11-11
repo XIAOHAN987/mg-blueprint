@@ -8,7 +8,7 @@
 ## 0. 快速启动
 
 ```bash
-cd C:\Users\XIAOHAN\WorkBuddy\2026-08-19-15-22-38\paperclip-template
+cd mg-blueprint   # 仓库根目录
 ./node_modules/.bin/remotion studio src/index.ts --port=3101
 # 浏览器打开 http://localhost:3101，左上角切换到 DeepseekVideo 合成（60s/1800帧）
 ```
@@ -18,7 +18,7 @@ cd C:\Users\XIAOHAN\WorkBuddy\2026-08-19-15-22-38\paperclip-template
 ./node_modules/.bin/remotion render src/index.ts DeepseekVideo out/deepseek.mp4 --codec h264 --crf 16 --concurrency=2
 ```
 **必须 `--concurrency=2`**：本机 16GB 内存，8 并发会杀掉 Chrome 标签页（报 "got no response"）。
-`remotion.config.ts` 已配置系统 Chrome（沙箱会拦截 headless shell 下载，不要改）。
+`remotion.config.ts` 会自动找本机 Chrome，找不到时由 Remotion 下载；也可用环境变量 `REMOTION_CHROME` 指定。
 
 ---
 
@@ -77,6 +77,9 @@ paperclip-template/
 ---
 
 ## 2. 相机与动画铁律（已和用户逐轮确认，不要回退）
+
+> ⚠️ **本节只适用于旧版 `CameraRig`（`src/components/`）。** 新片子用 `src/v2/` 的镜头系统，相机可以自由推拉摇移，流程见 [WORKFLOW-V2.md](WORKFLOW-V2.md)。
+
 
 1. **机位永远锁定舞台中心 (1100, 625)，只做 zoom（scale 0.95-1.15），绝不平移**。走位全部交给元素入场/退场动画。
 2. **相机只在 beat 切换瞬间动**：Bezier(0.45,0,0.2,1) 急滑 ~23 帧到位后完全静止；无呼吸、无持续漂移、无匀速爬行。用户明确反馈持续晃动"看着晕"。

@@ -1,5 +1,7 @@
 # MG Blueprint
 
+> **V2 镜头系统（`src/v2/`）**：连续世界 + 自由推拉摇移的相机，取代"锁中心微缩放"。制作流程见 [WORKFLOW-V2.md](WORKFLOW-V2.md)，示例合成 `ParadigmV2`、`GeminiV2`。
+
 高信息密度、冷静克制的知识讲解类 Remotion MG 动画模板工程。
 
 伪 3D、镜头呼吸、防 PPT 感——用代码实现专业科普视频的质感。
@@ -14,6 +16,33 @@
 - **流程图**：FlowDiagram（架构展示）+ DrawPathFlow（机制拆解，线条逐步绘制+流动圆点）+ FeatureCards（能力卡片组）
 - **装饰层**：FrameChrome（页眉页脚小字）+ SrtCaptions（SRT 驱动字幕）
 - **分镜表驱动**：SRT 字幕 → beat 归并 → 分镜表 JSON → 组件组装，口播/字幕/相机三条轨道同源对齐
+
+## 安装
+
+**需要自己装的只有 Node.js（18 及以上）。** Remotion 等依赖不在仓库里，由下面的命令按 `package.json` 自动安装。
+
+```bash
+git clone https://github.com/XIAOHAN987/mg-blueprint.git
+cd mg-blueprint
+npm install
+npm run studio
+```
+
+浏览器打开后，左上角选一个合成（如 `ParadigmV2`、`GeminiV2`）即可预览。渲染成 mp4：
+
+```bash
+npx remotion render src/index.ts ParadigmV2 out/paradigm-v2.mp4 --concurrency=2 --timeout=180000
+```
+
+| 项目 | 说明 |
+|---|---|
+| 浏览器 | 自动使用本机的 Chrome；没装 Chrome 时 Remotion 会自己下载一个。想指定别的浏览器，设置环境变量 `REMOTION_CHROME` 为可执行文件路径 |
+| 字体 | 中文字体（思源黑体）已随项目放在 `public/fonts/`，不需要联网。西文和等宽字体从 Google Fonts 取，8 秒内取不到会自动回退到系统字体，照常渲染 |
+| ffmpeg | 不需要单独安装，Remotion 自带 |
+| Python（可选） | 只有 V2 流程里的素材体检脚本用到：`pip install -r scripts/requirements.txt` |
+| 内存 | 16GB 内存的机器渲染时请保留 `--concurrency=2`，并发太高浏览器会被系统杀掉 |
+
+**授权提醒**：本仓库代码是 MIT 协议，但它依赖的 Remotion 有自己的授权条款——个人和小团队免费，达到一定规模的公司商用需要购买授权。商用前请查看 [Remotion 官方授权说明](https://www.remotion.dev/docs/license)。
 
 ## 快速开始
 

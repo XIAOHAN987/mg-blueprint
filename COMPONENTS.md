@@ -23,6 +23,9 @@ cd C:\Users\XIAOHAN\WorkBuddy\2026-08-19-15-22-38\paperclip-template
 
 ## 1. 核心架构（不可回退的铁律）
 
+> ⚠️ **本节只适用于旧版 `CameraRig`（`src/components/`）。** 新片子用 `src/v2/` 的镜头系统，相机可以自由推拉摇移，流程见 [WORKFLOW-V2.md](WORKFLOW-V2.md)。
+
+
 ### 相机系统（CameraRig）
 - **机位永远锁定舞台中心（1100, 625），只做 zoom（scale 0.95-1.15），绝不平移**
 - 走位全部交给元素入场/退场动画
