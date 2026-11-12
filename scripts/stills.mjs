@@ -36,7 +36,8 @@ console.log("[自检] 浏览器：" + (browserExecutable ?? "Remotion 自带（�
 // ───────── 1. 渲染 ─────────
 const serveUrl = await bundle({ entryPoint: path.resolve("src/index.ts") });
 const browser = await openBrowser("chrome", { browserExecutable });
-const composition = await selectComposition({ serveUrl, id, puppeteerInstance: browser });
+const inputProps = { __check: true };
+const composition = await selectComposition({ serveUrl, id, puppeteerInstance: browser, inputProps });
 
 let plan;
 if (list && list !== "auto") {
@@ -63,7 +64,7 @@ fs.rmSync(path.resolve(outDir), { recursive: true, force: true });
 const shots = [];
 for (const { f, kind } of plan) {
   const output = path.resolve(outDir, `${id}-${String(f).padStart(4, "0")}.jpg`);
-  await renderStill({ composition, serveUrl, frame: f, puppeteerInstance: browser, output, imageFormat: "jpeg", jpegQuality: 80 });
+  await renderStill({ composition, serveUrl, inputProps: { ...composition.props, ...inputProps }, frame: f, puppeteerInstance: browser, output, imageFormat: "jpeg", jpegQuality: 80 });
   shots.push({ frame: f, kind, output });
 }
 await browser.close({ silent: true });
@@ -79,6 +80,7 @@ for (const old of fs.readdirSync(path.resolve("out")).filter((n) => /^check(-\d+
 
 const pages = [];
 const sparse = [];
+const layoutFlags = [];
 let detectOk = true;
 for (let p = 0; p * PER_PAGE < shots.length; p++) {
   const part = shots.slice(p * PER_PAGE, (p + 1) * PER_PAGE);
@@ -103,7 +105,7 @@ img{display:block}.warn{color:#ff4a2b;margin-left:10px}
 // 判断"这一帧有没有内容"：看画面里明暗变化的多少，而不是看平均亮度
 // （深色背景的正常画面平均亮度也很低）。底部字幕带不计入。
 window.addEventListener("load", () => {
-  const sparse = [];
+  const sparse = [], layout = [];
   for (const cell of document.querySelectorAll(".cell")) {
     const img = cell.querySelector("img");
     const W = 160, H = 90, c = document.createElement("canvas");
@@ -128,9 +130,23 @@ window.addEventListener("load", () => {
       cell.classList.add("sparse");
       cell.querySelector(".warn").textContent = "空画面?";
       sparse.push(Number(cell.dataset.frame));
+      continue;
+    }
+    // 读探针色块（World 在自检模式下画在画面左上角）：洋红 = 素材太小，青 = 有小字
+    const pc = document.createElement("canvas");
+    pc.width = 48; pc.height = 24;
+    const pg = pc.getContext("2d");
+    pg.drawImage(img, 0, 0, 48, 24, 0, 0, 48, 24);
+    const a = pg.getImageData(12, 12, 1, 1).data, b = pg.getImageData(36, 12, 1, 1).data;
+    const flags = [];
+    if (a[0] > 180 && a[1] < 90 && a[2] > 180) flags.push("素材太小");
+    if (b[0] < 90 && b[1] > 180 && b[2] > 180) flags.push("有小字");
+    if (flags.length) {
+      cell.querySelector(".warn").textContent = flags.join(" · ");
+      layout.push({ f: Number(cell.dataset.frame), flags });
     }
   }
-  document.getElementById("result").textContent = "SPARSE=" + JSON.stringify(sparse);
+  document.getElementById("result").textContent = "SPARSE=" + JSON.stringify(sparse) + " LAYOUT=" + JSON.stringify(layout) + " END";
 });
 </script>`;
   const htmlPath = path.resolve(outDir, `_sheet-${p + 1}.html`);
@@ -157,6 +173,8 @@ window.addEventListener("load", () => {
   const m = /SPARSE=(\[[^\]]*\])/.exec(dom.stdout ?? "");
   if (m) sparse.push(...JSON.parse(m[1]));
   else detectOk = false;
+  const l = /LAYOUT=(\[.*?\]) END/.exec(dom.stdout ?? "");
+  if (l) layoutFlags.push(...JSON.parse(l[1]));
 }
 
 // ───────── 3. 报告 ─────────
@@ -174,5 +192,28 @@ if (inScene.length) {
   console.log("       多半是元素的入场时间晚于相机到位时间。把这些元素的入场帧提前到相机到位之前或同时。");
 }
 if (!sparse.length && detectOk) console.log("[自检] 没有发现空画面。");
+
+// 版面检查：只看场景已经搭完的帧（停留、转场前、结尾）。数值是直接从页面上量出来的，不是看图估的。
+// 个别场景用小图是允许的（比如一块入口小屏），但三成以上的场景素材都不到画面 30%，就是版式问题。
+const BUILT = new Set(["停留", "转场前", "结尾"]);
+const built = shots.filter((s) => BUILT.has(s.kind));
+const of = (name) => layoutFlags.filter((x) => BUILT.has(kindOf.get(x.f)) && x.flags.includes(name)).map((x) => x.f);
+const small = of("素材太小");
+const tiny = of("有小字");
+const layoutFail = built.length >= 4 && small.length / built.length > 0.3;
+const fontFail = built.length >= 4 && tiny.length / built.length > 0.3;
+if (small.length) {
+  console.log(`[自检] ${layoutFail ? "错误" : "提示"}：${built.length} 个搭完的场景帧里有 ${small.length} 个最大的素材不到画面 30% → 帧 ${small.join(", ")}`);
+  if (layoutFail) {
+    console.log("       这是把素材当网页配图用了。讲素材本身时让它全屏；细字截图全屏后再推到局部；");
+    console.log("       分屏可以用，但素材要占到半屏左右。见 WORKFLOW-V2.md「版式：全屏还是分屏」。");
+  }
+}
+if (tiny.length) {
+  console.log(`[自检] ${fontFail ? "错误" : "提示"}：有显示字号小于 48px 的文字 → 帧 ${tiny.join(", ")}。放大，或者删掉这行字。`);
+}
+console.log("[自检] 脚本替你查了 3 项：空画面、素材占比、最小字号。下面这些脚本判定不了，必须自己对着总览图核对：");
+console.log("       □ 相邻场景有没有重复同一种版式  □ 画面上的字是否都来自口播稿或素材（没有自己编的副标题）");
+console.log("       □ 取景框住的是不是口播正在讲的位置  □ 文字有没有压住素材主体或字幕");
 console.log(`[自检] 下一步：打开${pages.length > 1 ? "这 " + pages.length + " 张" : ""}总览图，逐条核对 WORKFLOW-V2.md 第 5 步的清单。只看总览图，不要逐张打开单帧。`);
-process.exit(inScene.length ? 1 : 0);
+process.exit(inScene.length || layoutFail || fontFail ? 1 : 0);

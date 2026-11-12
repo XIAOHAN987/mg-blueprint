@@ -40,7 +40,18 @@ export const ensureFonts = () => {
         // eslint-disable-next-line no-console
         console.warn(`[fonts] 找不到 public/${face.file}，${face.family} 回退到系统字体。`);
       })
-      .finally(() => continueRender(handle));
+      .finally(() => {
+        continueRender(handle);
+        // Remotion 的句柄列表在页面初始化时可能被重置；那之后 continueRender 找不到这个句柄，
+        // 超时计时器就不会被清掉，渲染到约 58 秒必然报"字体未清除"。这里自己兜底清一次。
+        const timers = (window as unknown as { remotion_delayRenderTimeouts?: Record<number, { timeout: ReturnType<typeof setTimeout> }> })
+          .remotion_delayRenderTimeouts;
+        const left = timers?.[handle];
+        if (left) {
+          clearTimeout(left.timeout);
+          delete timers![handle];
+        }
+      });
   }
 };
 

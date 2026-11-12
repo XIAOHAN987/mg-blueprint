@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { AbsoluteFill, Audio, staticFile } from "remotion";
 import { CameraRig } from "./components/CameraRig";
 import { GridBackground } from "./components/GridBackground";
@@ -19,13 +19,13 @@ import { newParadigmBeatMap } from "./beats/new-paradigm";
 import { newParadigmCues } from "./beats/new-paradigm-cues";
 import { COLOR } from "./theme";
 
-export const NewParadigmVideo: React.FC = () => {
+export const NewParadigmVideo: React.FC<{ embedded?: boolean }> = ({ embedded }) => {
   const { beats, stage } = newParadigmBeatMap;
   const b = (id: string) => beats.find((x) => x.id === id)!;
 
   return (
     <AbsoluteFill style={{ background: COLOR.bg }}>
-      <Audio src={staticFile("new-paradigm/voiceover.wav")} />
+      {!embedded && <Audio src={staticFile("new-paradigm/voiceover.wav")} />}
 
       <CameraRig beatMap={newParadigmBeatMap} viewWidth={1920} viewHeight={1080}>
         <DotMatrixBackground opacity={0.35} />
@@ -295,7 +295,7 @@ export const NewParadigmVideo: React.FC = () => {
       <NewParadigmFrameChrome />
 
       {/* 底部逐字卡拉OK字幕 */}
-      <WordKaraokeCaptions cues={newParadigmCues} />
+      {!embedded && <WordKaraokeCaptions cues={newParadigmCues} />}
     </AbsoluteFill>
   );
 };

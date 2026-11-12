@@ -205,14 +205,15 @@ const ScenePrice: React.FC = () => (
   </>
 );
 
-export const GeminiV2: React.FC<{ checkFrames?: unknown }> = () => {
+/** embedded：被别的合成嵌进去当画面用时，不出声音和字幕 */
+export const GeminiV2: React.FC<{ checkFrames?: unknown; embedded?: boolean }> = ({ embedded }) => {
   const frame = useCurrentFrame();
   const lift = prog(frame, K.toDoc - 2, 8, EASE.inOut);
   const feedOut = prog(frame, K.toDoc + 2, 16, EASE.inOut);
 
   return (
     <AbsoluteFill style={{ background: BG }}>
-      <Audio src={staticFile("gemini37/voiceover.wav")} />
+      {!embedded && <Audio src={staticFile("gemini37/voiceover.wav")} />}
 
       <World start={frameOn(S1)} moves={GEMINI_MOVES}>
         {/* 录屏：只留中间一栏，黑底融进世界 */}
@@ -266,7 +267,7 @@ export const GeminiV2: React.FC<{ checkFrames?: unknown }> = () => {
         )}
       </World>
 
-      <Captions cues={cues} />
+      {!embedded && <Captions cues={cues} />}
     </AbsoluteFill>
   );
 };

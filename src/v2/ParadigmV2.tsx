@@ -510,7 +510,8 @@ const SceneToken: React.FC = () => {
   );
 };
 
-export const ParadigmV2: React.FC<{ checkFrames?: unknown }> = () => {
+/** embedded：被别的合成嵌进去当画面用时，不出声音和字幕 */
+export const ParadigmV2: React.FC<{ checkFrames?: unknown; embedded?: boolean }> = ({ embedded }) => {
   const frame = useCurrentFrame();
   // 相机进到圆盘内部之后，圆盘悄悄换成整片灰色场地（此刻屏幕已被完全覆盖，观众看不到切换）
   const inside = frame >= K.pushDone;
@@ -530,7 +531,7 @@ export const ParadigmV2: React.FC<{ checkFrames?: unknown }> = () => {
 
   return (
     <AbsoluteFill style={{ background: C.ink }}>
-      <Audio src={staticFile("new-paradigm/voiceover.wav")} />
+      {!embedded && <Audio src={staticFile("new-paradigm/voiceover.wav")} />}
 
       <World start={frameOn(S1)} moves={PARADIGM_MOVES}>
         {frame < 96 && (
@@ -602,7 +603,7 @@ export const ParadigmV2: React.FC<{ checkFrames?: unknown }> = () => {
         )}
       </World>
 
-      <Captions cues={cues} />
+      {!embedded && <Captions cues={cues} />}
     </AbsoluteFill>
   );
 };

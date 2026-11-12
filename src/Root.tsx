@@ -8,11 +8,21 @@ import { OxAlphaVideo } from "./OxAlphaVideo";
 import { NewParadigmVideo } from "./NewParadigmVideo";
 import { PARADIGM_MOVES, ParadigmV2 } from "./v2/ParadigmV2";
 import { GEMINI_MOVES, GeminiV2 } from "./v2/GeminiV2";
+import { INTRO_MOVES, INTRO_TOTAL, IntroV2 } from "./v2/IntroV2";
 import { checkFrames } from "./v2/space";
 
 export const Root: React.FC = () => {
   return (
     <>
+      <Composition
+        id="IntroV2"
+        component={IntroV2}
+        durationInFrames={INTRO_TOTAL}
+        fps={30}
+        width={1920}
+        height={1080}
+        defaultProps={{ checkFrames: checkFrames(INTRO_MOVES, INTRO_TOTAL) }}
+      />
       <Composition
         id="GeminiV2"
         component={GeminiV2}
