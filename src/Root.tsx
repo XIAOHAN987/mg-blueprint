@@ -6,14 +6,31 @@ import { DeepseekVideo } from "./recipes/ArchitectureSpecRecipe";
 import { NewParadigmRecipe } from "./recipes/NewParadigmRecipe";
 import { OxAlphaVideo } from "./OxAlphaVideo";
 import { NewParadigmVideo } from "./NewParadigmVideo";
-import { ParadigmV2 } from "./v2/ParadigmV2";
-import { GeminiV2 } from "./v2/GeminiV2";
+import { PARADIGM_MOVES, ParadigmV2 } from "./v2/ParadigmV2";
+import { GEMINI_MOVES, GeminiV2 } from "./v2/GeminiV2";
+import { checkFrames } from "./v2/space";
 
 export const Root: React.FC = () => {
   return (
     <>
-      <Composition id="GeminiV2" component={GeminiV2} durationInFrames={640} fps={30} width={1920} height={1080} />
-      <Composition id="ParadigmV2" component={ParadigmV2} durationInFrames={720} fps={30} width={1920} height={1080} />
+      <Composition
+        id="GeminiV2"
+        component={GeminiV2}
+        durationInFrames={640}
+        fps={30}
+        width={1920}
+        height={1080}
+        defaultProps={{ checkFrames: checkFrames(GEMINI_MOVES, 640) }}
+      />
+      <Composition
+        id="ParadigmV2"
+        component={ParadigmV2}
+        durationInFrames={720}
+        fps={30}
+        width={1920}
+        height={1080}
+        defaultProps={{ checkFrames: checkFrames(PARADIGM_MOVES, 720) }}
+      />
       <Composition
         id="NewParadigmVideo"
         component={NewParadigmVideo}

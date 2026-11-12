@@ -1,10 +1,11 @@
 import React from "react";
-import { AbsoluteFill, Audio, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
-import { newParadigmCues } from "../beats/new-paradigm-cues";
+import { AbsoluteFill, Audio, staticFile, useCurrentFrame } from "remotion";
+import { cues } from "./cues/new-paradigm";
 import type { Move, T } from "./space";
 import { EASE, ID, VIEW_H, VIEW_W, compose, frameOn, prog } from "./space";
 import { Clip, Place, World } from "./World";
 import { C, Counter, F, Plate, Rise, RollSwap } from "./type";
+import { Captions, PORTAL_COVER_R, portalChild, tileParent } from "./kit";
 
 /**
  * ParadigmV2 —— 「新范式」前 24 秒重做（验证片段）。
@@ -23,30 +24,16 @@ const SQ: T = { x: 2500, y: 900, s: 1, r: -6 };
 
 /** 问号的"点"：圆心在 SQ 里的位置与半径。点里装着整个视频世界 */
 const DOT = { x: 1530, y: 800, r: 60 };
-/** 圆要大到能盖住整个 1920×1080 画幅的对角线 */
-const DISC_R = 1102;
-const VL_SCALE = DOT.r / DISC_R;
-/** 视频世界：原点 = V1 左上角 */
-const VL: T = compose(SQ, {
-  x: DOT.x - (VIEW_W / 2) * VL_SCALE,
-  y: DOT.y - (VIEW_H / 2) * VL_SCALE,
-  s: VL_SCALE,
-  r: 0,
-});
+/** 视频世界：原点 = V1 左上角。用 portalChild 换算，圆盘半径用 PORTAL_COVER_R 才能盖住整个画幅 */
+const DISC_R = PORTAL_COVER_R;
+const VL: T = portalChild(SQ, DOT);
 const V1: T = VL;
 const V2_LOCAL: T = { x: -2500, y: 0, s: 1, r: 0 };
 const V2: T = compose(VL, V2_LOCAL);
 
 /** S3A 里那块"屏"的位置：V2 满幅画面拉出后正好落在这里 */
 const TILE = { x: 110, y: 210, w: 640, h: 360 };
-const S3_SCALE = VIEW_W / TILE.w;
-const S3A_LOCAL: T = {
-  x: V2_LOCAL.x - TILE.x * S3_SCALE,
-  y: V2_LOCAL.y - TILE.y * S3_SCALE,
-  s: S3_SCALE,
-  r: 0,
-};
-const S3A: T = compose(VL, S3A_LOCAL);
+const S3A: T = tileParent(V2, TILE);
 const S3B: T = compose(S3A, { x: 2300, y: -160, s: 1, r: 5 });
 const S3C: T = compose(S3A, { x: 2560, y: 1420, s: 0.8, r: -4 });
 
@@ -64,7 +51,7 @@ const K = {
   toToken: 659,
 };
 
-const MOVES: Move[] = [
+export const PARADIGM_MOVES: Move[] = [
   { at: K.toQuestion, dur: 16, to: frameOn(SQ), ease: EASE.whip },
   { at: K.pushIn, dur: K.pushDone - K.pushIn, to: frameOn(V1), ease: EASE.push },
   { at: K.toStores, dur: 15, to: frameOn(V2), ease: EASE.whip },
@@ -523,39 +510,7 @@ const SceneToken: React.FC = () => {
   );
 };
 
-// ───────────── 字幕（屏幕固定层） ─────────────
-const Captions: React.FC = () => {
-  const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
-  const t = frame / fps;
-  const cue = newParadigmCues.find((c) => t >= c.start && t < c.end);
-  if (!cue) return null;
-  const chars = Array.from(cue.text);
-  const active = Math.min(chars.length - 1, Math.floor(((t - cue.start) / (cue.end - cue.start)) * chars.length));
-  return (
-    <div style={{ position: "absolute", left: 0, right: 0, bottom: 44, textAlign: "center" }}>
-      <span
-        style={{
-          display: "inline-block",
-          background: "rgba(12,13,16,0.82)",
-          padding: "8px 30px 12px",
-          fontFamily: F.cn,
-          fontWeight: 700,
-          fontSize: 50,
-          letterSpacing: "0.03em",
-        }}
-      >
-        {chars.map((ch, i) => (
-          <span key={i} style={{ color: i <= active ? C.paper : "rgba(244,243,239,0.4)" }}>
-            {ch}
-          </span>
-        ))}
-      </span>
-    </div>
-  );
-};
-
-export const ParadigmV2: React.FC = () => {
+export const ParadigmV2: React.FC<{ checkFrames?: unknown }> = () => {
   const frame = useCurrentFrame();
   // 相机进到圆盘内部之后，圆盘悄悄换成整片灰色场地（此刻屏幕已被完全覆盖，观众看不到切换）
   const inside = frame >= K.pushDone;
@@ -577,7 +532,7 @@ export const ParadigmV2: React.FC = () => {
     <AbsoluteFill style={{ background: C.ink }}>
       <Audio src={staticFile("new-paradigm/voiceover.wav")} />
 
-      <World start={frameOn(S1)} moves={MOVES}>
+      <World start={frameOn(S1)} moves={PARADIGM_MOVES}>
         {frame < 96 && (
           <Place t={S1}>
             <SceneTitle />
@@ -647,7 +602,7 @@ export const ParadigmV2: React.FC = () => {
         )}
       </World>
 
-      <Captions />
+      <Captions cues={cues} />
     </AbsoluteFill>
   );
 };

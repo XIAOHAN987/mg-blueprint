@@ -4,7 +4,7 @@ import type { Move, T } from "./space";
 import { EASE, ID, compose, frameOn, prog } from "./space";
 import { Clip, Place, World } from "./World";
 import { C, Counter, F, Plate, Rise, RollSwap } from "./type";
-import type { Cue } from "./kit";
+import { cues } from "./cues/gemini37";
 import { Captions, Doc, anchorParent } from "./kit";
 
 /**
@@ -17,6 +17,10 @@ import { Captions, Doc, anchorParent } from "./kit";
  *               → 第 5.7s 停在榜单推文上，位置 (828,572)，与 arena.png 等比例重合
  *   arena.png   742×806 截图，分辨率低 → 最多放大约 1.2 倍，不做局部特写
  *   price.png   1510×830 白底图表 → 可放大约 1.6 倍，左上有空白区可压字
+ *
+ * 资料与口播的出入（按流程要求如实记录，正式出片前应换成对应的资料）：
+ *   口播说"智能指数得分 56、仅次于 GPT-5.6 Tera"，arena.png 实际是 WebDev 榜第 8 名、1588 分；
+ *   口播说"定价下调一半"，price.png 里只有 $0.40 这一个数，没有调价前后的对比。
  */
 
 const f = (sec: number) => Math.round(sec * 30);
@@ -39,22 +43,10 @@ const PRICE_IN_S5: T = { x: -538, y: -197, s: 1.63, r: 0 };
 const K = { toDoc: f(9.35), toSpeed: f(14.5), toPrice: f(19.0) };
 const VIDEO_RATE = 0.61;
 
-const MOVES: Move[] = [
+export const GEMINI_MOVES: Move[] = [
   { at: K.toDoc, dur: 20, to: frameOn(S3), ease: EASE.push },
   { at: K.toSpeed, dur: 15, to: frameOn(S4), ease: EASE.whip },
   { at: K.toPrice, dur: 15, to: frameOn(S5), ease: EASE.whip },
-];
-
-const CUES: Cue[] = [
-  { start: 0.2, end: 1.8, text: "沉寂许久被大家戏称美国" },
-  { start: 1.8, end: 5.3, text: "大豆包的Gemini终于放出全新3.7Flash" },
-  { start: 5.533, end: 7.166, text: "依旧是Flash产品线" },
-  { start: 7.166, end: 9.266, text: "但综合能力迎来大幅升级" },
-  { start: 9.466, end: 12.466, text: "按照最新智能指数榜单得分56" },
-  { start: 12.5, end: 14.533, text: "仅次于GPT5.6Tera" },
-  { start: 14.6, end: 16.7, text: "输出速度堪称断层领先" },
-  { start: 16.8, end: 18.6, text: "峰值可达340tokens" },
-  { start: 19.066, end: 21.166, text: "同时官方定价直接下调一半" },
 ];
 
 const abs = (x: number, y: number): React.CSSProperties => ({ position: "absolute", left: x, top: y });
@@ -213,7 +205,7 @@ const ScenePrice: React.FC = () => (
   </>
 );
 
-export const GeminiV2: React.FC = () => {
+export const GeminiV2: React.FC<{ checkFrames?: unknown }> = () => {
   const frame = useCurrentFrame();
   const lift = prog(frame, K.toDoc - 2, 8, EASE.inOut);
   const feedOut = prog(frame, K.toDoc + 2, 16, EASE.inOut);
@@ -222,7 +214,7 @@ export const GeminiV2: React.FC = () => {
     <AbsoluteFill style={{ background: BG }}>
       <Audio src={staticFile("gemini37/voiceover.wav")} />
 
-      <World start={frameOn(S1)} moves={MOVES}>
+      <World start={frameOn(S1)} moves={GEMINI_MOVES}>
         {/* 录屏：只留中间一栏，黑底融进世界 */}
         {feedOut < 1 && (
           <Place t={VD} w={2560} h={1380} style={{ opacity: 1 - feedOut }}>
@@ -274,7 +266,7 @@ export const GeminiV2: React.FC = () => {
         )}
       </World>
 
-      <Captions cues={CUES} />
+      <Captions cues={cues} />
     </AbsoluteFill>
   );
 };

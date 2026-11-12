@@ -119,3 +119,31 @@ export const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 /** 0→1 进度：从 at 帧起，历时 dur 帧 */
 export const prog = (frame: number, at: number, dur: number, ease: (t: number) => number = EASE.out) =>
   ease(clamp01((frame - at) / dur));
+
+export type CheckFrame = { f: number; kind: "开头" | "转场前" | "转场中" | "到位" | "停稳" | "停留" | "结尾" };
+
+/**
+ * 自检该抽哪些帧，由相机轨迹直接算出，不靠人挑：
+ * 每次移动的起点前、中点、到位、到位后 15 帧；长时间停留每 3 秒补一帧；再加开头和结尾。
+ * 在 Root.tsx 里作为 defaultProps.checkFrames 传给合成，scripts/stills.mjs 会读它。
+ */
+export const checkFrames = (moves: Move[], total: number): CheckFrame[] => {
+  const out = new Map<number, CheckFrame["kind"]>();
+  const add = (f: number, kind: CheckFrame["kind"]) => {
+    const r = Math.round(f);
+    if (r >= 0 && r < total && !out.has(r)) out.set(r, kind);
+  };
+  add(15, "开头");
+  let prevEnd = 0;
+  for (const m of moves) {
+    add(m.at + m.dur + 15, "停稳");
+    add(m.at + m.dur, "到位");
+    add(m.at + m.dur / 2, "转场中");
+    add(m.at - 3, "转场前");
+    for (let f = prevEnd + 105; f < m.at - 30; f += 90) add(f, "停留");
+    prevEnd = m.at + m.dur;
+  }
+  for (let f = prevEnd + 105; f < total - 20; f += 90) add(f, "停留");
+  add(total - 5, "结尾");
+  return [...out.entries()].sort((a, b) => a[0] - b[0]).map(([f, kind]) => ({ f, kind }));
+};

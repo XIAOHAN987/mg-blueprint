@@ -6,10 +6,11 @@
   "private": false,
   "scripts": {
     "studio": "remotion studio src/index.ts",
-    "render": "remotion render src/index.ts PaperclipDemo out/demo.mp4 --codec h264 --crf 16",
+    "render": "remotion render src/index.ts ParadigmV2 out/paradigm-v2.mp4 --codec h264 --crf 17 --concurrency=2 --timeout=180000",
     "typecheck": "tsc --noEmit",
     "stills": "node scripts/stills.mjs",
-    "assets": "python scripts/asset_check.py"
+    "assets": "python scripts/asset_check.py",
+    "cues": "node scripts/srt2cues.mjs"
   },
   "dependencies": {
     "@remotion/cli": "^4.0.0",

@@ -1,14 +1,16 @@
 # 知识讲解类 MG 动画组件库 · 使用手册
 
+> ⚠️ **这是旧版文档**，描述的是第一版（相机锁在舞台中心、内容以卡片切换）。**新片子请按 [WORKFLOW-V2.md](WORKFLOW-V2.md) 做**，不要按本文的相机与转场规则。本文保留是因为旧合成仍在使用这些组件，其中的图表类组件也可以放进 V2 场景里复用。
+
 > 给 AI 的交接文档：读完即可用这套组件库制作高级 MG 动画视频。
-> 项目位置：`C:\Users\XIAOHAN\WorkBuddy\2026-08-19-15-22-38\paperclip-template`
+> 项目位置：仓库根目录
 
 ---
 
 ## 0. 快速启动
 
 ```bash
-cd C:\Users\XIAOHAN\WorkBuddy\2026-08-19-15-22-38\paperclip-template
+cd mg-blueprint   # 仓库根目录
 ./node_modules/.bin/remotion studio src/index.ts --port=3103
 # 浏览器打开 http://localhost:3103，左上角切换 Composition
 ```
