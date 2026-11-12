@@ -757,7 +757,7 @@ export const IntroV2: React.FC<{ checkFrames?: unknown }> = () => {
         {/* I2：推进圆点 */}
         {show(K.toI2, K.toI3) && (
           <Place t={I2} style={{ overflow: "hidden" }}>
-            {ov && frame < K.toI2 + 18 ? <Poster src="intro/p-0101.jpg" /> : <Embed local={Math.max(86, frame - 2800)}><ParadigmV2 embedded /></Embed>}
+            {ov && frame < K.toI2 + 18 ? <Poster src="intro/p-0101.jpg" /> : <Embed local={Math.max(101, frame - 2800)}><ParadigmV2 embedded /></Embed>}
             <Corner>
               <Plate at={f(97.6)} enter="drop" bg={C.red} size={210} font={F.num}>
                 ×18
