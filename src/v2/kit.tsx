@@ -121,3 +121,39 @@ export const Captions: React.FC<{ cues: Cue[] }> = ({ cues }) => {
     </div>
   );
 };
+
+/**
+ * Ground —— 铺在世界画布上的背景网格。它是世界的一部分，会跟着镜头平移、缩放、旋转，
+ * 所以纯文字场景不再是一片纯色，甩镜时也有参照物。不要把背景贴在屏幕上（镜头一动就穿帮）。
+ * 用法：放进 <World> 里、所有场景之前；rect 要盖住相机会经过的全部范围。
+ */
+export const Ground: React.FC<{
+  rect: Rect;
+  /** 细线间距（所在坐标系的像素）；每 major 格一条粗线 */
+  step?: number;
+  major?: number;
+  line?: string;
+  majorLine?: string;
+  weight?: number;
+}> = ({ rect, step = 240, major = 4, line = "rgba(244,243,239,0.06)", majorLine = "rgba(244,243,239,0.13)", weight = 3 }) => {
+  const big = step * major;
+  const layer = (dir: string, color: string, w: number) => `linear-gradient(${dir}, ${color} ${w}px, transparent ${w}px)`;
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: rect.x,
+        top: rect.y,
+        width: rect.w,
+        height: rect.h,
+        backgroundImage: [
+          layer("to right", majorLine, weight * 2),
+          layer("to bottom", majorLine, weight * 2),
+          layer("to right", line, weight),
+          layer("to bottom", line, weight),
+        ].join(","),
+        backgroundSize: `${big}px ${big}px, ${big}px ${big}px, ${step}px ${step}px, ${step}px ${step}px`,
+      }}
+    />
+  );
+};

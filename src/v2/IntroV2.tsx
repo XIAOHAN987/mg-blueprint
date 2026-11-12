@@ -5,7 +5,7 @@ import { GeminiV2 } from "./GeminiV2";
 import { ParadigmV2 } from "./ParadigmV2";
 import { cues as rawCues } from "./cues/intro";
 import type { Cue, Rect } from "./kit";
-import { Captions, Doc, PORTAL_COVER_R, lookAt, portalChild, tileParent } from "./kit";
+import { Captions, Ground, Doc, PORTAL_COVER_R, lookAt, portalChild, tileParent } from "./kit";
 import type { Move, T } from "./space";
 import { EASE, ID, VIEW_H, VIEW_W, compose, frameOn, prog } from "./space";
 import { Place, World } from "./World";
@@ -33,7 +33,7 @@ const TOTAL = 3700;
 const A: T = ID;
 const DOT = { x: 905, y: 846, r: 44 };
 const P1: T = portalChild(A, DOT);
-const TILE_B: Rect = { x: 110, y: 150, w: 800, h: 450 };
+const TILE_B: Rect = { x: 90, y: 110, w: 1056, h: 594 };
 const B: T = tileParent(P1, TILE_B);
 const at = (x: number, y: number, r = 0): T => compose(B, { x, y, s: 1, r });
 const C1 = at(2500, 0, 3);
@@ -53,7 +53,7 @@ const I4 = at(2500, 4500, -2);
 const J = at(0, 4500, 3);
 const Ks = at(0, 6000, 0);
 
-const TILE_G: Rect = { x: 900, y: 150, w: 912, h: 513 };
+const TILE_G: Rect = { x: 800, y: 150, w: 1056, h: 594 };
 const G_TILE: T = compose(G, { x: TILE_G.x, y: TILE_G.y, s: TILE_G.w / VIEW_W, r: 0 });
 const SHEET: T = compose(H3, { x: 377, y: 205, s: 0.62, r: 0 });
 const RED_CELL: Rect = { x: 890, y: -20, w: 570, h: 320.6 };
@@ -187,15 +187,15 @@ const SceneOpen: React.FC = () => {
 // ───────────── B：适用范围 ─────────────
 const SceneScope: React.FC = () => (
   <>
-    <Rise text="适用于" at={K.pullB + 14} style={{ ...heavy, ...abs(990, 130), fontSize: 84, fontWeight: 700, color: dimText }} />
-    <Plate at={f(11.0)} enter="wipe" bg={C.paper} color={C.ink} size={150} style={abs(990, 250)}>
+    <Rise text="适用于" at={K.pullB + 14} style={{ ...heavy, ...abs(1200, 110), fontSize: 84, fontWeight: 700, color: dimText }} />
+    <Plate at={f(11.0)} enter="wipe" bg={C.paper} color={C.ink} size={150} style={abs(1200, 230)}>
       知识分享
     </Plate>
-    <Rise text="口播视频" at={f(11.9)} stagger={2} style={{ ...heavy, ...abs(985, 450), fontSize: 150 }} />
-    <Plate at={f(13.4)} enter="flip" bg={C.red} size={104} style={abs(110, 680)}>
+    <Rise text="口播视频" at={f(11.9)} stagger={2} style={{ ...heavy, ...abs(1196, 440), fontSize: 150 }} />
+    <Plate at={f(13.4)} enter="flip" bg={C.red} size={104} style={abs(90, 760)}>
       带视觉能力的模型
     </Plate>
-    <Rise text="都能接入" at={f(15.5)} stagger={2} style={{ ...heavy, ...abs(1090, 660), fontSize: 170 }} />
+    <Rise text="都能接入" at={f(15.5)} stagger={2} style={{ ...heavy, ...abs(1100, 730), fontSize: 170 }} />
   </>
 );
 
@@ -489,27 +489,27 @@ const SceneOneByOne: React.FC = () => {
         以前
       </Plate>
       <Rise text="一张一张看图" at={f(69.6)} stagger={2} style={{ ...heavy, ...abs(400, 78), fontSize: 100 }} />
-      <div style={{ ...abs(110, 250), width: 960, height: 540, overflow: "hidden", border: `6px solid ${C.paper}` }}>
+      <div style={{ ...abs(100, 215), width: 1100, height: 619, overflow: "hidden", border: `6px solid ${C.paper}` }}>
         <Img
           src={staticFile(`intro/${cur}.jpg`)}
-          style={{ width: 960, height: 540, display: "block", transform: `translateX(${(1 - flip) * 960}px)` }}
+          style={{ width: 1100, height: 619, display: "block", transform: `translateX(${(1 - flip) * 1100}px)` }}
         />
       </div>
-      <div style={{ ...abs(110, 815), fontFamily: F.num, fontWeight: 900, fontSize: 96, color: dimText }}>
+      <div style={{ ...abs(100, 855), fontFamily: F.num, fontWeight: 900, fontSize: 96, color: dimText }}>
         第 {idx + 1} 张
       </div>
-      <Rise text="看不出前后帧" at={f(71.5)} stagger={1} style={{ ...heavy, ...abs(1170, 240), fontSize: 92 }} />
-      <Rise text="有什么关系" at={f(72.6)} stagger={1} style={{ ...heavy, ...abs(1170, 350), fontSize: 92 }} />
-      <Plate at={f(73.9)} enter="drop" bg={C.paper} color={C.ink} size={96} style={abs(1170, 500)}>
+      <Rise text="看不出前后帧" at={f(71.5)} stagger={1} style={{ ...heavy, ...abs(1256, 240), fontSize: 92 }} />
+      <Rise text="有什么关系" at={f(72.6)} stagger={1} style={{ ...heavy, ...abs(1256, 350), fontSize: 92 }} />
+      <Plate at={f(73.9)} enter="drop" bg={C.paper} color={C.ink} size={96} style={abs(1256, 500)}>
         效率低
       </Plate>
       {frame >= f(74.9) && (
-        <div style={{ ...abs(1170, 650), display: "flex", alignItems: "baseline", gap: 18 }}>
-          <span style={{ fontFamily: F.num, fontWeight: 900, fontSize: 70, color: dimText }}>TOKEN</span>
-          <Counter to={48000} at={f(74.9)} dur={40} style={{ fontSize: 130, color: C.red, lineHeight: 1 }} />
+        <div style={{ ...abs(1256, 650), display: "flex", alignItems: "baseline", gap: 18 }}>
+          <span style={{ fontFamily: F.num, fontWeight: 900, fontSize: 56, color: dimText }}>TOKEN</span>
+          <Counter to={48000} at={f(74.9)} dur={40} style={{ fontSize: 104, color: C.red, lineHeight: 1 }} />
         </div>
       )}
-      <Plate at={f(76.2)} enter="wipe" bg={C.red} size={84} style={abs(1170, 800)}>
+      <Plate at={f(76.2)} enter="wipe" bg={C.red} size={84} style={abs(1256, 800)}>
         问题还难发现
       </Plate>
     </>
@@ -604,6 +604,14 @@ export const IntroV2: React.FC<{ checkFrames?: unknown }> = () => {
       <Audio src={staticFile("intro/voiceover.mp3")} />
 
       <World start={frameOn(A)} moves={INTRO_MOVES}>
+        {/* 背景网格铺在世界上，跟着镜头动。开场一张，进了圆点之后换成大画布那张 */}
+        {frame < K.inDot ? (
+          <Ground rect={{ x: -480, y: -360, w: 2880, h: 1800 }} />
+        ) : (
+          <Place t={B} w={0} h={0} style={{ overflow: "visible" }}>
+            <Ground rect={{ x: -2400, y: -1920, w: 14400, h: 11040 }} />
+          </Place>
+        )}
         {frame < K.inDot + 6 && (
           <Place t={A}>
             <SceneOpen />
@@ -725,6 +733,7 @@ export const IntroV2: React.FC<{ checkFrames?: unknown }> = () => {
           <>
             <Place t={SHEET} w={1880} h={1176} style={{ clipPath: ov ? undefined : `inset(0 0 ${(1 - prog(frame, f(79.6), 14)) * 100}% 0)` }}>
               <Doc src="intro/check.png" w={1880} h={1176} marks={[{ x: 936, y: 26, w: 478, h: 272, at: f(80.9), color: C.red }]} />
+              {frame < K.backH3 + 3 && (<>
               <div style={{ position: "absolute", left: 962, top: 96 }}>
                 <Plate at={f(81.2)} enter="wipe" bg={C.red} size={30}>
                   空画面 · 自动标红
@@ -735,6 +744,7 @@ export const IntroV2: React.FC<{ checkFrames?: unknown }> = () => {
                   小模型也有下限
                 </Plate>
               </div>
+              </>)}
             </Place>
             <Place t={H3}>
               <SceneSheet />
