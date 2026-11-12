@@ -21,16 +21,17 @@ const PER_PAGE = 16;
 const CELL_W = 470;
 const LABEL_H = 30;
 
+// 浏览器：REMOTION_CHROME 优先，其次按 scripts/browsers.json 的顺序找；都没有时交给 Remotion 自动下载
+const expandEnv = (p) => p.replace(/%([A-Z_]+)%/g, (_, k) => process.env[k] ?? "");
+const listedBrowsers = JSON.parse(fs.readFileSync(path.resolve("scripts/browsers.json"), "utf8")).paths;
 const browserExecutable =
-  [
-    process.env.REMOTION_CHROME,
-    "C:/Program Files/Google/Chrome/Application/chrome.exe",
-    "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe",
-    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-    "/usr/bin/google-chrome",
-    "/usr/bin/chromium",
-    "/usr/bin/chromium-browser",
-  ].find((p) => p && fs.existsSync(p)) ?? null; // 都没有时交给 Remotion 自动下载
+  [process.env.REMOTION_CHROME, ...listedBrowsers]
+    .filter(Boolean)
+    .map(expandEnv)
+    .find((p) => fs.existsSync(p)) ?? null;
+
+console.log("[自检] 正在打包并渲染。第一次运行要打包整个工程，通常需要 30–60 秒，期间没有输出是正常的。");
+console.log("[自检] 浏览器：" + (browserExecutable ?? "Remotion 自带（首次会自动下载）"));
 
 // ───────── 1. 渲染 ─────────
 const serveUrl = await bundle({ entryPoint: path.resolve("src/index.ts") });

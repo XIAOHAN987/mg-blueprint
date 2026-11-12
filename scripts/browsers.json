@@ -1,0 +1,22 @@
+{
+  "说明": "渲染用浏览器的候选路径，按顺序取第一个存在的。remotion.config.ts 和 scripts/stills.mjs 共用这份清单。环境变量 REMOTION_CHROME 优先于这里的所有项；都不存在时由 Remotion 自动下载专用浏览器。",
+  "paths": [
+    "C:/Program Files/Google/Chrome/Application/chrome.exe",
+    "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe",
+    "%LOCALAPPDATA%/Google/Chrome/Application/chrome.exe",
+    "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
+    "C:/Program Files/Microsoft/Edge/Application/msedge.exe",
+    "C:/Program Files/BraveSoftware/Brave-Browser/Application/brave.exe",
+    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge",
+    "/Applications/Chromium.app/Contents/MacOS/Chromium",
+    "/Applications/Brave Browser.app/Contents/MacOS/Brave Browser",
+    "/usr/bin/google-chrome",
+    "/usr/bin/google-chrome-stable",
+    "/usr/bin/chromium",
+    "/usr/bin/chromium-browser",
+    "/snap/bin/chromium",
+    "/usr/bin/microsoft-edge",
+    "/usr/bin/brave-browser"
+  ]
+}

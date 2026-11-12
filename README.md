@@ -20,6 +20,11 @@ npm install
 npm run studio
 ```
 
+**第一次会比较慢，不是卡死：**
+
+- `npm install` 要下载约 650MB 依赖，视网络需要几分钟。
+- 第一次启动预览、抽帧或渲染时，要先把整个工程打包一次，通常 30–60 秒，期间终端可能没有输出。之后会快很多。
+
 浏览器打开后，左上角选一个合成（如 `ParadigmV2`、`GeminiV2`）即可预览。渲染成 mp4：
 
 ```bash
@@ -28,8 +33,8 @@ npx remotion render src/index.ts ParadigmV2 out/paradigm-v2.mp4 --concurrency=2 
 
 | 项目 | 说明 |
 |---|---|
-| 浏览器 | 自动使用本机的 Chrome；没装 Chrome 时 Remotion 会自己下载一个。想指定别的浏览器，设置环境变量 `REMOTION_CHROME` 为可执行文件路径 |
-| 字体 | 中文字体（思源黑体）已随项目放在 `public/fonts/`，不需要联网。西文和等宽字体从 Google Fonts 取，8 秒内取不到会自动回退到系统字体，照常渲染 |
+| 浏览器 | 自动使用本机已装的 Chrome、Edge、Chromium 或 Brave（查找顺序见 `scripts/browsers.json`）；都没有时 Remotion 会自己下载一个。想指定别的浏览器，设置环境变量 `REMOTION_CHROME` 为可执行文件路径 |
+| 字体 | 中文、西文、等宽三套字体都随项目放在 `public/fonts/`，渲染不需要联网 |
 | ffmpeg | 不需要单独安装，Remotion 自带 |
 | Python | 抽帧自检不需要 Python。只有 V2 流程第 1 步的素材体检脚本用到：`pip install -r scripts/requirements.txt` |
 | 内存 | 16GB 内存的机器渲染时请保留 `--concurrency=2`，并发太高浏览器会被系统杀掉 |
