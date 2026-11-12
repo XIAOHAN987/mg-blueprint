@@ -39,7 +39,7 @@ npx remotion render src/index.ts ParadigmV2 out/paradigm-v2.mp4 --concurrency=2 
 | 浏览器 | 自动使用本机的 Chrome；没装 Chrome 时 Remotion 会自己下载一个。想指定别的浏览器，设置环境变量 `REMOTION_CHROME` 为可执行文件路径 |
 | 字体 | 中文字体（思源黑体）已随项目放在 `public/fonts/`，不需要联网。西文和等宽字体从 Google Fonts 取，8 秒内取不到会自动回退到系统字体，照常渲染 |
 | ffmpeg | 不需要单独安装，Remotion 自带 |
-| Python（可选） | 只有 V2 流程里的素材体检脚本用到：`pip install -r scripts/requirements.txt` |
+| Python | 抽帧自检不需要 Python。只有 V2 流程第 1 步的素材体检脚本用到：`pip install -r scripts/requirements.txt` |
 | 内存 | 16GB 内存的机器渲染时请保留 `--concurrency=2`，并发太高浏览器会被系统杀掉 |
 
 **授权提醒**：本仓库代码是 MIT 协议，但它依赖的 Remotion 有自己的授权条款——个人和小团队免费，达到一定规模的公司商用需要购买授权。商用前请查看 [Remotion 官方授权说明](https://www.remotion.dev/docs/license)。

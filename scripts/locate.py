@@ -1,6 +1,15 @@
 """在视频里找一张截图出现的时间和位置：python scripts/locate.py <视频> <截图> [起始秒] [结束秒]
 用于"资料从画面里原位长出来"的转场：输出的 时间 / 左上角坐标 / 比例 直接填进 anchorParent。"""
-import cv2, sys, numpy as np
+try:
+    import cv2, numpy as np
+except ImportError:
+    import sys
+    sys.stdout.reconfigure(encoding="utf-8")
+    print("缺少依赖：这个脚本需要 opencv-python 和 numpy。")
+    print("请先运行： pip install -r scripts/requirements.txt")
+    print("装好后重新运行本命令。不要跳过这一步改用别的办法。")
+    sys.exit(2)
+import sys
 sys.stdout.reconfigure(encoding="utf-8")
 v, im = sys.argv[1], sys.argv[2]
 tpl = cv2.imdecode(np.fromfile(im, dtype=np.uint8), cv2.IMREAD_COLOR)

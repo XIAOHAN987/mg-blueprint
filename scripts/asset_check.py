@@ -1,7 +1,16 @@
 """素材体检：python scripts/asset_check.py <素材文件或文件夹> [输出目录=out/inspect]
 对每个视频输出：尺寸/帧率/时长、四边平均色、内部剪辑点、带时间戳的总览图。
 对每张图片输出：尺寸、在 1920×1080 画幅里不糊的最大放大倍率。"""
-import cv2, sys, os, glob, numpy as np
+try:
+    import cv2, numpy as np
+except ImportError:
+    import sys
+    sys.stdout.reconfigure(encoding="utf-8")
+    print("缺少依赖：这个脚本需要 opencv-python 和 numpy。")
+    print("请先运行： pip install -r scripts/requirements.txt")
+    print("装好后重新运行本命令。不要跳过这一步改用别的办法。")
+    sys.exit(2)
+import sys, os, glob
 sys.stdout.reconfigure(encoding="utf-8")
 
 def read_img(p): return cv2.imdecode(np.fromfile(p, dtype=np.uint8), cv2.IMREAD_COLOR)

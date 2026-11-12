@@ -10,8 +10,8 @@ Config.setChromiumOpenGlRenderer("angle");
 // 都没有时不指定，Remotion 会自动下载一个专用浏览器。
 const chromeCandidates = [
   process.env.REMOTION_CHROME,
-  "C:\Program Files\Google\Chrome\Application\chrome.exe",
-  "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe",
+  "C:/Program Files/Google/Chrome/Application/chrome.exe",
+  "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe",
   "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
   "/usr/bin/google-chrome",
   "/usr/bin/chromium",
