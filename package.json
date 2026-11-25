@@ -6,7 +6,7 @@
   "private": false,
   "scripts": {
     "studio": "remotion studio src/index.ts",
-    "render": "remotion render src/index.ts ParadigmV2 out/paradigm-v2.mp4 --codec h264 --crf 17 --concurrency=2 --timeout=180000",
+    "render": "node scripts/render.mjs",
     "typecheck": "tsc --noEmit",
     "stills": "node scripts/stills.mjs",
     "assets": "python scripts/asset_check.py",

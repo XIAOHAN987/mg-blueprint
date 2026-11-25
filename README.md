@@ -29,7 +29,7 @@ npm run studio
 浏览器打开后，左上角选一个合成（如 `ParadigmV2`、`GeminiV2`）即可预览。渲染成 mp4：
 
 ```bash
-npx remotion render src/index.ts ParadigmV2 out/paradigm-v2.mp4 --concurrency=2 --timeout=180000
+node scripts/render.mjs ParadigmV2 out/paradigm-v2.mp4
 ```
 
 | 项目 | 说明 |
@@ -37,8 +37,9 @@ npx remotion render src/index.ts ParadigmV2 out/paradigm-v2.mp4 --concurrency=2 
 | 浏览器 | 自动使用本机已装的 Chrome、Edge、Chromium 或 Brave（查找顺序见 `scripts/browsers.json`）；都没有时 Remotion 会自己下载一个。想指定别的浏览器，设置环境变量 `REMOTION_CHROME` 为可执行文件路径 |
 | 字体 | 中文、西文、等宽三套字体都随项目放在 `public/fonts/`，渲染不需要联网 |
 | ffmpeg | 不需要单独安装，Remotion 自带 |
+| 临时缓存 | `stills.mjs` 和 `render.mjs` 默认把打包与渲染缓存放到工程同盘的 `.tmp/` 目录，运行结束自动清理，避免挤爆 C 盘（设置 `MG_KEEP_SYS_TMP=1` 可改回系统临时目录） |
 | Python | 抽帧自检不需要 Python。只有 V2 流程第 1 步的素材体检脚本用到：`pip install -r scripts/requirements.txt` |
-| 内存 | 16GB 内存的机器渲染时请保留 `--concurrency=2`，并发太高浏览器会被系统杀掉 |
+| 内存 | 16GB 内存的机器渲染时请保留 `--concurrency=2`（`render.mjs` 已默认启用），并发太高浏览器会被系统杀掉 |
 
 **授权提醒**：本仓库代码是 MIT 协议，但它依赖的 Remotion 有自己的授权条款——个人和小团队免费，达到一定规模的公司商用需要购买授权。商用前请查看 [Remotion 官方授权说明](https://www.remotion.dev/docs/license)。
 
@@ -92,7 +93,7 @@ npm install                                        # 装依赖
 npm run studio                                     # 预览，改代码即热更新
 node scripts/srt2cues.mjs <字幕.srt> <名字>           # SRT 转字幕数据
 node scripts/stills.mjs <合成ID>                     # 抽帧自检：自动选帧，输出 out/check-*.png
-npx remotion render src/index.ts <合成ID> out/x.mp4 --concurrency=2 --timeout=180000
+node scripts/render.mjs <合成ID> out/x.mp4           # 渲染 mp4（默认使用工程盘 .tmp/ 缓存并自动清理）
 ```
 
 ## 项目结构
@@ -113,6 +114,8 @@ src/
 
 scripts/
 ├─ stills.mjs           # 自动选帧 + 拼总览图 + 空画面检测（不需要 Python）
+├─ render.mjs           # 渲染 mp4 封装（默认走工程盘 .tmp/ 缓存并自动清理）
+├─ tmp.mjs              # 工程盘临时缓存重定向与退出/残余清理
 ├─ srt2cues.mjs         # SRT 转字幕数据
 ├─ asset_check.py       # 素材体检
 └─ locate.py            # 在录屏里定位一张截图

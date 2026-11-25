@@ -219,10 +219,10 @@ defaultProps={{ checkFrames: checkFrames(<这个合成导出的 MOVES>, <总帧�
 有问题就改，改完重抽对应的帧。全部通过后才渲染：
 
 ```bash
-npx remotion render src/index.ts <合成ID> out/<名字>.mp4 --codec h264 --crf 17 --concurrency=2 --timeout=180000
+node scripts/render.mjs <合成ID> out/<名字>.mp4
 ```
 
-`--concurrency=2` 和 `--timeout=180000` 不要去掉：本机内存有限，字体加载偶尔超过默认的 30 秒。如果系统盘（`%TEMP%`）剩余空间低于 3 GB，Remotion 打包复制 `public/` 时可能报 `Failed to fetch`，运行前将环境变量 `TEMP`/`TMP` 指向空间充足的磁盘即可。
+脚本默认附带 `--codec h264 --crf 17 --concurrency=2 --timeout=180000`（16GB 内存机器不要调高并发），并且与 `stills.mjs` 一样会自动把 Remotion 打包与渲染临时缓存重定向到工程同盘的 `.tmp/` 目录、结束后自动清理，不再占用系统盘（C 盘）临时空间。如需改回系统默认临时目录可设置环境变量 `MG_KEEP_SYS_TMP=1`。
 
 渲染前，对每个转场再手动连续抽一次（从起点前 4 帧到终点后 4 帧，每 2 帧一张），确认运动连贯、没有跳变。
 

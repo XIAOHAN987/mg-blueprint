@@ -4,26 +4,15 @@
 // 做三件事：渲染这些帧 → 拼成总览图 out/check-*.png → 检测空画面。
 // 拼图用的是渲染用的同一个浏览器，所以只要能渲染就一定能拼图。
 // 拼图失败、或场景停稳后仍是空画面，都会以非零状态退出，不会悄悄跳过。
+import { tmpDir, cleanupTmp, checkTmpSpace } from "./tmp.mjs";
 import fs from "node:fs";
-import os from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { pathToFileURL } from "node:url";
 import { bundle } from "@remotion/bundler";
 import { ensureBrowser, openBrowser, renderStill, selectComposition } from "@remotion/renderer";
 
-// 检查临时目录所在盘剩余空间：Remotion 每次打包会复制 public/ 并生成临时缓存，空间不足会导致浏览器拒载素材
-try {
-  const tmpDir = os.tmpdir();
-  const stat = fs.statfsSync(tmpDir);
-  const freeGB = (stat.bavail * stat.bsize) / 1e9;
-  if (freeGB < 3) {
-    console.warn(`[自检] 警告：临时目录 ${tmpDir} 剩余空间仅 ${freeGB.toFixed(2)} GB（<3 GB），打包或渲染可能失败。`);
-    console.warn("       建议先清理临时目录，或在运行前设置环境变量 TEMP/TMP 指向空间充足的磁盘。");
-  }
-} catch {
-  // 旧版 Node 不支持 statfsSync 时静默跳过
-}
+checkTmpSpace("[自检]");
 
 const [id, list, outDir = "out/stills"] = process.argv.slice(2);
 if (!id) {
@@ -46,6 +35,7 @@ const browserExecutable =
 
 console.log("[自检] 正在打包并渲染。第一次运行要打包整个工程，通常需要 30–60 秒，期间没有输出是正常的。");
 console.log("[自检] 浏览器：" + (browserExecutable ?? "Remotion 自带（首次会自动下载）"));
+console.log("[自检] 临时缓存目录：" + tmpDir + "（结束后自动清理）");
 
 // ───────── 1. 渲染 ─────────
 const serveUrl = await bundle({ entryPoint: path.resolve("src/index.ts") });
@@ -230,4 +220,5 @@ console.log("[自检] 脚本替你查了 3 项：空画面、素材占比、最�
 console.log("       □ 相邻场景有没有重复同一种版式  □ 画面上的字是否都来自口播稿或素材（没有自己编的副标题）");
 console.log("       □ 取景框住的是不是口播正在讲的位置  □ 文字有没有压住素材主体或字幕");
 console.log(`[自检] 下一步：打开${pages.length > 1 ? "这 " + pages.length + " 张" : ""}总览图，逐条核对 WORKFLOW-V2.md 第 5 步的清单。只看总览图，不要逐张打开单帧。`);
+cleanupTmp();
 process.exit(inScene.length || layoutFail || fontFail ? 1 : 0);
