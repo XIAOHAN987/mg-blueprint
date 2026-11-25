@@ -2,6 +2,7 @@ import React from "react";
 import { Img, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import type { Pose, T } from "./space";
 import { EASE, VIEW_H, VIEW_W, apply, compose, prog } from "./space";
+import { Place } from "./World";
 import { C, F } from "./type";
 
 /**
@@ -155,5 +156,88 @@ export const Ground: React.FC<{
         backgroundSize: `${big}px ${big}px, ${big}px ${big}px, ${step}px ${step}px, ${step}px ${step}px`,
       }}
     />
+  );
+};
+
+/**
+ * PortalStage —— 搭配 portalChild 使用的推入舞台容器。
+ * 圆盘覆盖全屏（到位前 lead 帧）即挂载子内容，并在上方叠加同色遮罩平滑淡出，
+ * 避免推入中途触发小字告警，也消除到位瞬间的暗场跳变。
+ */
+export const PortalStage: React.FC<{
+  t: T;
+  /** 推入起始帧与持续帧数（与 MOVES 里的 Move 一致） */
+  at: number;
+  dur: number;
+  /** 圆盘与淡出遮罩的颜色（通常与外层圆点同色） */
+  color: string;
+  /** 展开后的舞台背景色 */
+  bg?: string;
+  /** 圆盘在推入前提前显现的帧数，默认 24 */
+  growBefore?: number;
+  /** 到位前提前挂载子内容的帧数（默认 6，此时圆盘已基本覆盖全屏） */
+  lead?: number;
+  /** 遮罩淡出帧数，默认 12 */
+  fadeDur?: number;
+  /** 展开后背景舞台范围（相对于 t 坐标系） */
+  stage?: Rect;
+  /** 是否在舞台上铺默认世界网格，默认 true */
+  ground?: boolean;
+  children?: React.ReactNode;
+}> = ({
+  t,
+  at,
+  dur,
+  color,
+  bg = C.ink,
+  growBefore = 24,
+  lead = 6,
+  fadeDur = 12,
+  stage = { x: -4000, y: -4000, w: 12000, h: 10000 },
+  ground = true,
+  children,
+}) => {
+  const frame = useCurrentFrame();
+  if (frame < at - growBefore) return null;
+  const done = at + dur;
+  const ready = frame >= done - lead;
+  const grow = prog(frame, at - growBefore, 14);
+  const veil = 1 - prog(frame, done - lead, fadeDur, EASE.inOut);
+  const box = ready
+    ? { x: stage.x, y: stage.y, w: stage.w, h: stage.h, radius: "0" }
+    : {
+        x: VIEW_W / 2 - PORTAL_COVER_R,
+        y: VIEW_H / 2 - PORTAL_COVER_R,
+        w: PORTAL_COVER_R * 2,
+        h: PORTAL_COVER_R * 2,
+        radius: "50%",
+      };
+
+  return (
+    <Place t={t}>
+      <div
+        style={{
+          position: "absolute",
+          left: box.x,
+          top: box.y,
+          width: box.w,
+          height: box.h,
+          borderRadius: box.radius,
+          overflow: "hidden",
+          background: bg,
+          clipPath: ready ? undefined : `circle(${grow * 50}% at 50% 50%)`,
+        }}
+      >
+        {ready && ground && <Ground rect={{ x: 0, y: 0, w: box.w, h: box.h }} />}
+        {ready && (
+          <div style={{ position: "absolute", left: -box.x, top: -box.y, width: VIEW_W, height: VIEW_H }}>
+            {children}
+          </div>
+        )}
+        {veil > 0 && (
+          <div style={{ position: "absolute", inset: 0, background: color, opacity: veil, pointerEvents: "none" }} />
+        )}
+      </div>
+    </Place>
   );
 };

@@ -144,13 +144,22 @@ export const Counter: React.FC<{
   at: number;
   dur: number;
   decimals?: number;
+  /** 是否显示千分位逗号，默认 true；年份/编号等请设为 false */
+  comma?: boolean;
+  /** 自定义格式器（优先级高于 decimals / comma） */
+  format?: (v: number) => string;
   suffix?: string;
   style?: React.CSSProperties;
-}> = ({ from = 0, to, at, dur, decimals = 0, suffix = "", style }) => {
+}> = ({ from = 0, to, at, dur, decimals = 0, comma = true, format, suffix = "", style }) => {
   const frame = useCurrentFrame();
   const v = from + (to - from) * prog(frame, at, dur, EASE.out);
-  const txt =
-    decimals > 0 ? v.toFixed(decimals) : Math.round(v).toLocaleString("en-US");
+  const txt = format
+    ? format(v)
+    : decimals > 0
+      ? v.toFixed(decimals)
+      : comma
+        ? Math.round(v).toLocaleString("en-US")
+        : String(Math.round(v));
   return (
     <div style={{ fontFamily: F.num, fontWeight: 900, fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap", ...style }}>
       {txt}

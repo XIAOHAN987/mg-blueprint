@@ -179,23 +179,29 @@ export const Clip: React.FC<{
   src: string;
   /** 全局起播帧 */
   start: number;
-  /** 素材时长（秒） */
+  /** 可播时长（秒）；设置了 from 时，表示从 from 起最多播放的时长 */
   seconds: number;
+  /** 素材内起播时间（秒），默认 0；用于直接截取长视频中段 */
+  from?: number;
   rate?: number;
+  /** 尾帧安全余量（帧），默认 3 保持向后兼容；播到原片末尾时可调大（如 12）避免录屏尾帧寻址报错 */
+  tailPad?: number;
   /** 显示尺寸，默认满幅 1920×1080；录屏等可按素材原始像素摆放 */
   w?: number;
   h?: number;
   style?: React.CSSProperties;
-}> = ({ src, start, seconds, rate = 1, w = VIEW_W, h = VIEW_H, style }) => {
+}> = ({ src, start, seconds, from = 0, rate = 1, tailPad = 3, w = VIEW_W, h = VIEW_H, style }) => {
   const frame = useCurrentFrame();
-  const maxLocal = Math.floor((seconds * 30) / rate) - 3;
+  const maxLocal = Math.max(0, Math.floor((seconds * 30) / rate) - tailPad);
   const local = Math.min(maxLocal, Math.max(0, frame - start));
+  const trimBefore = from > 0 ? Math.round(from * 30) : undefined;
   return (
     <Freeze frame={start + local}>
       <Sequence from={start} layout="none">
         <OffthreadVideo
           src={staticFile(src)}
           muted
+          trimBefore={trimBefore}
           playbackRate={rate}
           style={{ position: "absolute", left: 0, top: 0, width: w, height: h, objectFit: "cover", ...style }}
         />

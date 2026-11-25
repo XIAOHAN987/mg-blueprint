@@ -5,11 +5,25 @@
 // 拼图用的是渲染用的同一个浏览器，所以只要能渲染就一定能拼图。
 // 拼图失败、或场景停稳后仍是空画面，都会以非零状态退出，不会悄悄跳过。
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { pathToFileURL } from "node:url";
 import { bundle } from "@remotion/bundler";
 import { ensureBrowser, openBrowser, renderStill, selectComposition } from "@remotion/renderer";
+
+// 检查临时目录所在盘剩余空间：Remotion 每次打包会复制 public/ 并生成临时缓存，空间不足会导致浏览器拒载素材
+try {
+  const tmpDir = os.tmpdir();
+  const stat = fs.statfsSync(tmpDir);
+  const freeGB = (stat.bavail * stat.bsize) / 1e9;
+  if (freeGB < 3) {
+    console.warn(`[自检] 警告：临时目录 ${tmpDir} 剩余空间仅 ${freeGB.toFixed(2)} GB（<3 GB），打包或渲染可能失败。`);
+    console.warn("       建议先清理临时目录，或在运行前设置环境变量 TEMP/TMP 指向空间充足的磁盘。");
+  }
+} catch {
+  // 旧版 Node 不支持 statfsSync 时静默跳过
+}
 
 const [id, list, outDir = "out/stills"] = process.argv.slice(2);
 if (!id) {
